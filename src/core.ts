@@ -30,13 +30,7 @@ import {
 } from "@urql/core"
 import { getCartesiContractAbi, getCartesiDeploymentAddress } from './utils';
 import { GET_NOTICES_QUERY, SDKParams } from './types';
-/**
- * Parameters for initializing the CartesiSDK.
- * @property {Provider} provider - The EIP1193 provider to use.
- * @property {AddressLike} address - The address of the dapp.
- * @property {string} [endpoint] - The endpoint of the dapp.
- * @property {any} [abi] - The ABI of the dapp.
- */
+
 export class CartesiSDK {
     private readonly provider: EIP1193Provider;
     private readonly dappAddress!: Address;
@@ -47,6 +41,16 @@ export class CartesiSDK {
 
     private chain?: Chain;
 
+    /**
+     * Constructor for initializing the SDK with the provided parameters.
+     *
+     * @param {EIP1193Provider} provider - The provider for the SDK
+     * @param {string} address - (optional) The address for the dapp
+     * @param {string} endpoint - (optional) The endpoint for the dapp
+     * @param {string} abi - (optional) The ABI for the dapp
+     * @param {number} waitBlocks - (optional) The number of confirmation blocks after send inputs
+     * @param {string} account - (optional) The account for the SDK
+     */
     public constructor({ provider, address, endpoint, abi, waitBlocks, account }: SDKParams) {
         this.provider = provider as EIP1193Provider;
         if (address) this.dappAddress = address;
@@ -74,6 +78,13 @@ export class CartesiSDK {
         return this.dappAddress;
     }
 
+    /**
+     * Assigns the chain based on the provider.
+     *
+     * This function is async and should be awaited.
+     *
+     * @return {Promise<void>} Promise that resolves when the chain is assigned.
+     */
     public assignChain = async () => {
         const chainId = await this.provider.request({ method: 'eth_chainId' })
         this.chain = extractChain({
@@ -107,7 +118,7 @@ export class CartesiSDK {
             chain: this.chain,
             transport: custom(this.provider)
         })
-        const [account] = this.account || await client.getAddresses()
+        const account = this.account as Address || (await client.getAddresses()).shift()
         if (!account) throw new Error('Not able to grab an signer account from provider');
 
         const publicClient = createPublicClient({

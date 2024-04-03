@@ -1,6 +1,6 @@
 # Cartesi SDK
 
-We believe the Cartesi project requires multiple knowledge that is required from Junior devs, our idea is to create a package that simplifies implementation on frontend tricky tasks like deal with Parameters conversion, payload processing, send/receive protocols.
+Our idea is to create a package that simplifies implementation on frontend tricky tasks like deal with Parameters conversion, payload processing, send/receive protocols.
 
 We aim to create a Isomorphic JS package to use with any visual library on Browser or Terminal. The SDK will support any provider or network. All configurable and allowing defining an app with multiple chains supported. The SDK should adapt accordingly to the configurations and raise warnings in cases of non-supported provider chains.
 
@@ -56,12 +56,54 @@ Fetch the inspect data for a transaction ID.
 
 Returns a promise that resolves to the inspect data of the transaction.
 
-#### `listenReport(id: string, fn: (report: any) => void)`
+#### `addNoticesListener(fn: (report: any) => void)`
 
-Listen for reports from a transaction ID.
+Listen for all notices triggered by the Cartesi Machine
 
-- `id: string`: The ID of the transaction to listen for.
 - `fn: (report: any) => void`: The function to call when a report is received.
+
+```ts
+const unsubscribe = await cartesi.addNoticesListener((result) => {
+  console.log(result);
+});
+```
+
+Returns an unsubscribe function to stop listening for reports.
+
+#### `addCustomNoticesListener(query: TypedDocumentNode, fn: (report: any) => void)`
+
+Add a listener for custom notices.
+The `variables` are the variables for the query.
+
+- `query: TypedDocumentNode`: The `query` is a GraphQL query that should use the `notices` field of the Cartesi contract.
+- `fn: (report: any) => void`: The function to call when a report is received.
+
+```ts
+export const GET_NOTICES_QUERY = gql`
+  query GetNotices($cursor: String) {
+    notices(first: 10, after: $cursor) {
+      totalCount
+      pageInfo {
+        hasNextPage
+        endCursor
+      }
+      edges {
+        node {
+          index
+          payload
+        }
+      }
+    }
+  }
+`;
+
+const unsubscribe = await cartesi.addCustomNoticesListener(
+  GET_NOTICES_QUERY,
+  (result) => {
+    console.log(result);
+  }
+);
+```
 
 Returns an unsubscribe function to stop listening for reports.
 
