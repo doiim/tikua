@@ -10,3 +10,7 @@ export {
     ChainName,
     SDKParams,
 } from './types'
+export {
+    parseAbi,
+    Address
+} from 'viem'

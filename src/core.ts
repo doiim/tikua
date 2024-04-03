@@ -19,7 +19,8 @@ import {
     arbitrumSepolia,
     optimism,
     optimismGoerli,
-    optimismSepolia
+    optimismSepolia,
+    foundry
 } from 'viem/chains'
 import {
     AnyVariables,
@@ -96,7 +97,8 @@ export class CartesiSDK {
                 arbitrumSepolia,
                 optimism,
                 optimismGoerli,
-                optimismSepolia
+                optimismSepolia,
+                foundry
             ],
             // @ts-ignore
             id: Number(chainId),

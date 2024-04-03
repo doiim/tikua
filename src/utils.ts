@@ -10,7 +10,8 @@ import { ChainName, ContractName, namesByChain } from './types';
  */
 export const getCartesiDeploymentAddress = (chainId: number | Address, contract: ContractName) => {
     const decoded = (typeof chainId === 'number' ? '0x' + chainId.toString(16) : chainId) as ChainName;
-    const deploymentAddresses = require(`./deployments/${namesByChain[decoded as ChainName]}.json`) as { [key: string]: string };
+    // We replace network foundry with Mainnet cause it is the same addresses
+    const deploymentAddresses = require(`./deployments/${decoded == '0x7a69' ? 'mainnet' : namesByChain[decoded as ChainName]}.json`) as { [key: string]: string };
     return deploymentAddresses[contract] as Address
 }
 

@@ -19,6 +19,7 @@ export enum chainsByName {
     'optimism_goerli' = 420,
     'optimism_sepolia' = 11155420,
     'sepolia' = 11155111,
+    'foundry' = 31337
 }
 
 export type ChainName = keyof typeof namesByChain;
@@ -32,6 +33,7 @@ export const namesByChain = {
     '0x1a4': 'optimism_goerli',
     '0xaa37dc': 'optimism_sepolia',
     '0xaa36a7': 'sepolia',
+    '0x7a69': 'foundry',
 }
 
 export type ContractName =
