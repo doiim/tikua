@@ -27,9 +27,10 @@ import {
     Client,
     TypedDocumentNode,
     cacheExchange,
-    fetchExchange
+    fetchExchange,
+    subscriptionExchange,
 } from "@urql/core"
-import { getCartesiContractAbi, getCartesiDeploymentAddress } from './utils';
+import { decodeNotices, getCartesiContractAbi, getCartesiDeploymentAddress } from './utils';
 import { GET_NOTICES_QUERY, SDKParams } from './types';
 
 export class CartesiSDK {
@@ -39,6 +40,7 @@ export class CartesiSDK {
     private readonly dappABI!: Abi;
     private readonly waitBlocks: number = 1;
     private readonly account?: string;
+    private timers: number[] = [];
 
     private chain?: Chain;
 
@@ -167,7 +169,6 @@ export class CartesiSDK {
             functionName: fn,
             args
         })
-        // TODO Check this request. It needs to be fixed according to Deroll
         const response = await fetch(`${this.dappEndpoint}/inspect/${payloadRequest}`);
         const data = await response.json();
         return decodeFunctionResult({
@@ -179,42 +180,30 @@ export class CartesiSDK {
 
     /**
      * Adds a listener for notices and calls the provided callback with the result.
+     * The listener keeps polling the dapp endpoint every `pollInterval` milliseconds
+     * until it unsubscribes.
+     * @param {number} pollInterval - The time in milliseconds between each poll.
      * @param {(result: any) => void} callback - The function to call when a new notice is received.
      * @return {() => void} - A function to unsubscribe from the listener created.
      * @throws {Error} - If there is no endpoint defined for the instance.
      */
-    public addNoticesListener = (callback: (result: any) => void) => {
+    public addNoticesListener = (pollInterval: number, callback: (result: any) => void) => {
         if (!this.dappEndpoint) throw new Error('There is no endpoint defined for the instance');
-        let cursor;
         const client = new Client({
             url: `${this.dappEndpoint}/graphql`,
-            exchanges: [cacheExchange, fetchExchange]
+            requestPolicy: 'cache-and-network',
+            exchanges: [
+                cacheExchange,
+                fetchExchange,
+            ],
         })
-        const { unsubscribe } = client.query(GET_NOTICES_QUERY, { cursor }).subscribe(result => {
+        let cursor: string
+        const timeout = setInterval(async () => {
+            const result = await client.query(GET_NOTICES_QUERY, { cursor }).toPromise()
+            if (!result.data.notices.pageInfo.hasNextPage && !result.data.notices.pageInfo.endCursor) return
             cursor = result.data.notices.pageInfo.endCursor;
-            callback(result.data.notices);
-        })
-        return unsubscribe
-    }
-
-    /**
-     * Adds a listener for notices and calls the provided callback with the result.
-     * @param {TypedDocumentNode} gqlQuery - The custom GraphQL Query to be used for fetch notices
-     * @param {(result: any) => void} callback - The function to call when a new notice is received.
-     * @return {() => void} - A function to unsubscribe from the listener created.
-     * @throws {Error} - If there is no endpoint defined for the instance.
-     */
-    public addCustomNoticesListener = (gqlQuery: TypedDocumentNode<any, AnyVariables>, callback: (result: any) => void) => {
-        if (!this.dappEndpoint) throw new Error('There is no endpoint defined for the instance');
-        let cursor;
-        const client = new Client({
-            url: `${this.dappEndpoint}/graphql`,
-            exchanges: [cacheExchange, fetchExchange]
-        })
-        const { unsubscribe } = client.query(gqlQuery, { cursor }).subscribe(result => {
-            cursor = result.data.notices.pageInfo.endCursor;
-            callback(result.data.notices);
-        })
-        return unsubscribe
+            callback(decodeNotices(result.data.notices, this.dappABI));
+        }, pollInterval)
+        return () => clearInterval(timeout)
     }
 }

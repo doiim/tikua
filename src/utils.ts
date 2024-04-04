@@ -1,5 +1,5 @@
-import { Address, Abi } from 'viem'
-import { ChainName, ContractName, namesByChain } from './types';
+import { Address, Abi, decodeFunctionData } from 'viem'
+import { ChainName, ContractName, NoticeDecoded, NoticesRawObject, namesByChain } from './types';
 
 /**
  * Retrieves the deployment address for a given contract on a specified chain.
@@ -24,4 +24,15 @@ export const getCartesiDeploymentAddress = (chainId: number | Address, contract:
  */
 export const getCartesiContractAbi = function importJSON(contract: ContractName) {
     return require(`./abis/${contract}.json`) as Abi;
+}
+
+export const decodeNotices = (notices: NoticesRawObject, abi: Abi) => {
+    return notices.edges.map((edge) => {
+        return {
+            index: edge.node.index,
+            msgSender: edge.node.input.msgSender,
+            timestamp: edge.node.input.timestamp,
+            payload: decodeFunctionData({ abi, data: edge.node.payload as `0x${string}` })
+        }
+    }) as NoticeDecoded[]
 }

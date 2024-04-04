@@ -2,8 +2,8 @@ import { gql } from "@urql/core";
 import { Address } from 'viem';
 
 export interface SDKParams {
-    provider: any,
-    address: Address,
+    provider?: any,
+    address?: Address,
     endpoint?: string,
     abi?: any
     waitBlocks?: number,
@@ -54,17 +54,49 @@ export type ContractName =
 // GraphQL query to retrieve notices given a cursor
 export const GET_NOTICES_QUERY = gql`
 query GetNotices($cursor: String) {
-    notices(first: 10, after: $cursor) {
-        totalCount
-        pageInfo {
-            hasNextPage
-            endCursor
-        }
-        edges {
-            node {
-                index
-                payload
+        notices(first: 10, after: $cursor) {
+            totalCount
+            pageInfo {
+                hasNextPage
+                endCursor
+            }
+            edges {
+                node {
+                    index
+                    input {
+                        index
+                      	msgSender
+                      	timestamp
+                    }
+                    payload
+                }
             }
         }
-    }
-}`;
+    }`;
+
+
+export type NoticesRawObject = {
+    totalCount: number;
+    pageInfo: {
+        hasNextPage: boolean;
+        endCursor: string;
+    };
+    edges: {
+        node: {
+            index: number;
+            input: {
+                index: number;
+                msgSender: Address;
+                timestamp: number;
+            };
+            payload: string;
+        };
+    }[];
+};
+
+export type NoticeDecoded = {
+    index: number;
+    msgSender: Address;
+    timestamp: number;
+    payload: any;
+}

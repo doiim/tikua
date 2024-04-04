@@ -56,62 +56,20 @@ Fetch the inspect data for a transaction ID.
 
 Returns a promise that resolves to the inspect data of the transaction.
 
-#### `addNoticesListener(fn: (report: any) => void)`
+#### `addNoticesListener(pollInterval : number, fn: (report: any) => void)`
 
 Listen for all notices triggered by the Cartesi Machine
 
+- `pollInterval: number`: Time between each request to GraphQL.
 - `fn: (report: any) => void`: The function to call when a report is received.
 
 ```ts
-const unsubscribe = await cartesi.addNoticesListener((result) => {
+const unsubscribe = await cartesi.addNoticesListener(1000, (result) => {
   console.log(result);
 });
 ```
 
 Returns an unsubscribe function to stop listening for reports.
-
-#### `addCustomNoticesListener(query: TypedDocumentNode, fn: (report: any) => void)`
-
-Add a listener for custom notices.
-The `variables` are the variables for the query.
-
-- `query: TypedDocumentNode`: The `query` is a GraphQL query that should use the `notices` field of the Cartesi contract.
-- `fn: (report: any) => void`: The function to call when a report is received.
-
-```ts
-export const GET_NOTICES_QUERY = gql`
-  query GetNotices($cursor: String) {
-    notices(first: 10, after: $cursor) {
-      totalCount
-      pageInfo {
-        hasNextPage
-        endCursor
-      }
-      edges {
-        node {
-          index
-          payload
-        }
-      }
-    }
-  }
-`;
-
-const unsubscribe = await cartesi.addCustomNoticesListener(
-  GET_NOTICES_QUERY,
-  (result) => {
-    console.log(result);
-  }
-);
-```
-
-Returns an unsubscribe function to stop listening for reports.
-
-## SDK References
-
-- sendInput
-- fetchInspect
-- listenReport
 
 ## For Maintainers
 
