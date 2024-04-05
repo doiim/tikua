@@ -23,18 +23,18 @@ module.exports = {
         "viem": "viem",
         "@urql/core": "@urql/core"
     },
-    plugins: [
-        new CopyPlugin({
-            patterns: [
-                {
-                    from: path.resolve(__dirname, 'src', 'deployments'),
-                    to: path.resolve(__dirname, 'dist', 'deployments')
-                },
-                {
-                    from: path.resolve(__dirname, 'src', 'abis'),
-                    to: path.resolve(__dirname, 'dist', 'abis')
-                },
-            ],
-        }),
-    ]
+    // plugins: [
+    //     new CopyPlugin({
+    //         patterns: [
+    //             {
+    //                 from: path.resolve(__dirname, 'src', 'deployments'),
+    //                 to: path.resolve(__dirname, 'dist', 'deployments')
+    //             },
+    //             {
+    //                 from: path.resolve(__dirname, 'src', 'abis'),
+    //                 to: path.resolve(__dirname, 'dist', 'abis')
+    //             },
+    //         ],
+    //     }),
+    // ]
 };

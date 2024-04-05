@@ -174,7 +174,7 @@ export class CartesiSDK {
         return decodeFunctionResult({
             abi: this.dappABI,
             functionName: fn,
-            data: data.payload
+            data: data.reports.shift().payload
         })
     }
 
