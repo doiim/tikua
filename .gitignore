@@ -1,4 +1,5 @@
-node_modules
+# local node modules 
+/node_modules
 
 # distribution path
-dist
+/dist
