@@ -3,7 +3,7 @@ import './App.css'
 import Onboard, { WalletState } from '@web3-onboard/core'
 import injectedModule from '@web3-onboard/injected-wallets'
 import { CartesiSDK, Address } from '@doiim/cartesi-sdk'
-import { Client, cacheExchange, fetchExchange, gql, subscriptionExchange } from '@urql/core'
+import { gql } from '@urql/core'
 
 // GraphQL query to retrieve notices given a cursor
 export const GET_NOTICES_QUERY = gql`

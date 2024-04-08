@@ -26,6 +26,7 @@ The `CartesiSDK` class is the main entry point for this SDK. It is instantiated 
 ```ts
 const abi = parseAbi([
   "function attackDragon(uint256 dragonId, string weapon)",
+  "function dragonStatus(uint256 dragonId) returns (uint256)",
 ]);
 const cartesi = new CartesiSDK(
   "0x0123123",
@@ -53,6 +54,11 @@ const txHash = await cartesi.sendInput("attackDragon", [1, "sword"]);
 Fetch the inspect data for a transaction ID.
 
 - `id: string`: The ID of the transaction to fetch.
+- `args: any[]`: Array of arguments to be passed to function.
+
+```ts
+const status = await cartesiSDK.fetchInspect("dragonStatus", [dragonId]);
+```
 
 Returns a promise that resolves to the inspect data of the transaction.
 
@@ -70,6 +76,14 @@ const unsubscribe = await cartesi.addNoticesListener(1000, (result) => {
 ```
 
 Returns an unsubscribe function to stop listening for reports.
+
+## TODO
+
+[ ] Initialize SDK variables using local network by default for testing purposes.
+[ ] Test with different connectors that provide EIP1193Provider.
+[ ] Add examples using Vue and Node as clients.
+[ ] Check the possibility to add custom Notice filters.
+[ ] Decode timestamps on notices.
 
 ## For Maintainers
 

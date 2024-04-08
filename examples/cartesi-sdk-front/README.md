@@ -1,30 +1,22 @@
-# React + TypeScript + Vite
+# Cartesi SDK client example
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+This example project demonstrates how to use the Cartesi SDK client in a JavaScript frontend application. The project uses React and includes an example of how to interact with a dapp deployed on the network. It provides a simple user interface to send inputs to the dapp, drink potions, and check the hero status.
 
-Currently, two official plugins are available:
+Overall, this example project should help you get started with using the Cartesi SDK client in a JavaScript frontend application.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## Usage
 
-## Expanding the ESLint configuration
+Be sure that the backend example is running before run this client.
 
-If you are developing a production application, we recommend updating the configuration to enable type aware lint rules:
-
-- Configure the top-level `parserOptions` property like this:
-
-```js
-export default {
-  // other rules...
-  parserOptions: {
-    ecmaVersion: 'latest',
-    sourceType: 'module',
-    project: ['./tsconfig.json', './tsconfig.node.json'],
-    tsconfigRootDir: __dirname,
-  },
-}
+```sh
+npm install
+npm run dev
 ```
 
-- Replace `plugin:@typescript-eslint/recommended` to `plugin:@typescript-eslint/recommended-type-checked` or `plugin:@typescript-eslint/strict-type-checked`
-- Optionally add `plugin:@typescript-eslint/stylistic-type-checked`
-- Install [eslint-plugin-react](https://github.com/jsx-eslint/eslint-plugin-react) and add `plugin:react/recommended` & `plugin:react/jsx-runtime` to the `extends` list
+## References
+
+For documentation on how to develop Cartesi applications refer to https://docs.cartesi.io
+
+For documentation on how to use Sunodo refer to https://docs.sunodo.io
+
+For documentation on how to use Deroll refer to https://github.com/tuler/deroll
