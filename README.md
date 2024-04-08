@@ -79,11 +79,12 @@ Returns an unsubscribe function to stop listening for reports.
 
 ## TODO
 
+[ ] Decode properly BigInt arguments
+[ ] Decode timestamps on notices.
 [ ] Initialize SDK variables using local network by default for testing purposes.
 [ ] Test with different connectors that provide EIP1193Provider.
 [ ] Add examples using Vue and Node as clients.
 [ ] Check the possibility to add custom Notice filters.
-[ ] Decode timestamps on notices.
 
 ## For Maintainers
 
