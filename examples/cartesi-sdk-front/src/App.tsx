@@ -3,34 +3,21 @@ import './App.css'
 import Onboard, { WalletState } from '@web3-onboard/core'
 import injectedModule from '@web3-onboard/injected-wallets'
 import { CartesiSDK, Address } from '@doiim/cartesi-sdk'
-import { gql } from '@urql/core'
+import ReactJson from '@vahagn13/react-json-view'
 
-// GraphQL query to retrieve notices given a cursor
-export const GET_NOTICES_QUERY = gql`
-query GetNotices($cursor: String) {
-        notices(first: 3, after: $cursor) {
-            totalCount
-            pageInfo {
-                hasNextPage
-                endCursor
-            }
-            edges {
-                node {
-                    index
-                    input {
-                        index
-                      	msgSender
-                      	timestamp
-                    }
-                    payload
-                }
-            }
-        }
-    }`;
+// const playersList: Map<Address, number> = new Map()
+// if (!playersList.has('0x0')) playersList.set('0x0', 100)
+// playersList.set('0x0', Math.max(playersList.get('0x0')! - 30, 0))
+// console.log(BigInt(playersList.get('0x0') || 0))
 
+// Add property to allow JSON to be serialized on the frontend
+// @ts-ignore
+BigInt.prototype.toJSON = function () { return this.toString() }
 
+// Web3Onboard module for injected wallets
 const injected = injectedModule()
 
+// Instantiating Web3Onboard
 const onboard = Onboard({
   wallets: [injected],
   chains: [
@@ -43,6 +30,7 @@ const onboard = Onboard({
   ]
 })
 
+// Defining Dapp ABI
 const abi = [
   "function attackDragon(uint256 dragonId)",
   "function drinkPotion()",
@@ -54,7 +42,7 @@ function App() {
 
   const [wallets, setWallets] = useState<WalletState[]>([])
   const [dragonId, setDragonId] = useState<number>(0)
-  const [message, setMessage] = useState<string>('')
+  const [message, setMessage] = useState<object>({})
 
   useEffect(() => {
     const state = onboard.state.select()
@@ -99,7 +87,9 @@ function App() {
       abi
     })
     const status = await cartesiSDK.fetchInspect('heroStatus', [wallets[0].accounts[0].address as Address])
-    setMessage('Hero life: ' + status);
+    setMessage({
+      life: status
+    })
   }
 
   const checkDragon = async (e: any) => {
@@ -111,21 +101,30 @@ function App() {
       abi: abi
     })
     const status = await cartesiSDK.fetchInspect('dragonStatus', [dragonId])
-    setMessage('Dragon ' + dragonId + ' life: ' + status);
+    setMessage({
+      dragonId: dragonId,
+      status: status
+    });
   }
 
+  /**
+   * This function starts a subscription by creating a new CartesiSDK instance
+   * and adding a notices listener that updates the message state.
+   *
+   * @return {Promise<void>} Returns a Promise that resolves when the notices listener is added.
+   */
   const startSubscription = async () => {
     const cartesiSDK = new CartesiSDK({
       provider: onboard.state.get().wallets[0].provider,
       endpoint: 'http://localhost:8080',
       abi: abi
     })
-    return cartesiSDK.addNoticesListener(1000, (e) => setMessage(JSON.stringify(e)))
+    return cartesiSDK.addNoticesListener(1000, (e) => setMessage(e))
   }
 
   return (
     <>
-      <h1>Cartesi SDK Test</h1>
+      <h1>Cartesi SDK Example</h1>
       <div className="card">
         {wallets.length == 0 ?
           <button onClick={connectWallet}>Connect Wallet</button>
@@ -150,7 +149,9 @@ function App() {
           {dragonId > 0 ? <input type="submit" value="Attack Dragon" onClick={attackDragon} /> : null}
         </form>
 
-        <p className="orange">{message}</p>
+        <div className='message'>
+          <ReactJson theme="monokai" displayDataTypes={false} src={message} />
+        </div>
       </div>
     </>
   )

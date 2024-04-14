@@ -12,6 +12,7 @@
   "dependencies": {
     "@doiim/cartesi-sdk": "^0.2.0",
     "@urql/core": "^5.0.0",
+    "@vahagn13/react-json-view": "^1.0.15",
     "@web3-onboard/core": "^2.21.4",
     "@web3-onboard/injected-wallets": "^2.10.13",
     "react": "^18.2.0",

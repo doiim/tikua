@@ -27,7 +27,7 @@ app.addAdvanceHandler(async ({ payload, metadata }) => {
       console.log('Received Input Attack Dragon', dragonId, metadata.msg_sender)
       if (!playersList.has(metadata.msg_sender)) playersList.set(metadata.msg_sender, 100)
       playersList.set(metadata.msg_sender, Math.max(playersList.get(metadata.msg_sender)! - 30, 0))
-
+      console.log(metadata.msg_sender);
       if (!dragonList[Number(dragonId)]) return 'reject'
       const dragonLife = dragonList[Number(dragonId)]
       dragonList[Number(dragonId)] = Math.max(dragonLife! - 10, 0)
@@ -47,7 +47,6 @@ app.addAdvanceHandler(async ({ payload, metadata }) => {
 });
 
 app.addInspectHandler(async ({ payload }) => {
-  console.log(hexToString(payload))
   const { functionName, args } = decodeFunctionData({ abi, data: hexToString(payload) as `0x${string}` });
 
   switch (functionName) {
@@ -56,7 +55,7 @@ app.addInspectHandler(async ({ payload }) => {
       const heroLife = encodeFunctionResult({
         abi,
         functionName: "heroStatus",
-        result: BigInt(playersList.get(player) || 0)
+        result: BigInt(playersList.get(player.toLowerCase() as Address) || 0)
       })
       app.createReport({ payload: heroLife })
       return;

@@ -53,3 +53,7 @@ form label {
   display: flex;
   gap: 20px;
 }
+
+.message {
+  text-align: start;
+}
