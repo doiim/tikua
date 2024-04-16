@@ -63,7 +63,7 @@ function App() {
     e.preventDefault()
     const cartesiSDK = new CartesiSDK({
       provider: onboard.state.get().wallets[0].provider,
-      address: '0x70ac08179605AF2D9e75782b8DEcDD3c22aA4D0C',
+      address: '0xab7528bb862fB57E8A2BCd567a2e929a0Be56a5e',
       account: wallets[0].accounts[0].address as Address,
       abi
     })
@@ -73,7 +73,7 @@ function App() {
   const drinkPotion = async () => {
     const cartesiSDK = new CartesiSDK({
       provider: onboard.state.get().wallets[0].provider,
-      address: '0x70ac08179605AF2D9e75782b8DEcDD3c22aA4D0C',
+      address: '0xab7528bb862fB57E8A2BCd567a2e929a0Be56a5e',
       account: wallets[0].accounts[0].address as Address,
       abi
     })
@@ -97,7 +97,7 @@ function App() {
     const cartesiSDK = new CartesiSDK({
       provider: onboard.state.get().wallets[0].provider,
       endpoint: 'http://localhost:8080',
-      address: '0x70ac08179605AF2D9e75782b8DEcDD3c22aA4D0C',
+      address: '0xab7528bb862fB57E8A2BCd567a2e929a0Be56a5e',
       abi: abi
     })
     const status = await cartesiSDK.fetchInspect('dragonStatus', [dragonId])
