@@ -150,7 +150,7 @@ function App() {
         </form>
 
         <div className='message'>
-          <ReactJson theme="monokai" displayDataTypes={false} src={message} />
+          <ReactJson theme="monokai" displayDataTypes={false} src={message} style={{color: 'rgb(253, 151, 31)'}} />
         </div>
       </div>
     </>
