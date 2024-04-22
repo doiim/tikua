@@ -1,8 +1,8 @@
 {
-  "name": "@doiim/cartesi-sdk",
-  "version": "0.2.0",
+  "name": "@doiim/tikua",
+  "version": "0.3.0",
   "author": "doiim",
-  "description": "A Isomorphic JS/TS package to use with any framework on Browser or Terminal.",
+  "description": "A Isomorphic JS/TS package to use with any framework on Browser or Terminal for Cartesi dapps.",
   "repository": {
     "type": "git",
     "url": "https://github.com/doiim/cartesi-sdk"

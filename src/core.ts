@@ -206,4 +206,33 @@ export class CartesiSDK {
         }, pollInterval)
         return () => clearInterval(timeout)
     }
+
+    /**
+     * Adds a listener for notices and calls the provided callback with the result.
+     * The listener keeps polling the dapp endpoint every `pollInterval` milliseconds
+     * until it unsubscribes.
+     * @param {number} pollInterval - The time in milliseconds between each poll.
+     * @param {(result: any) => void} callback - The function to call when a new notice is received.
+     * @return {() => void} - A function to unsubscribe from the listener created.
+     * @throws {Error} - If there is no endpoint defined for the instance.
+     */
+    public addMyNoticesListener = (pollInterval: number, account: Address, callback: (result: any) => void) => {
+        if (!this.dappEndpoint) throw new Error('There is no endpoint defined for the instance');
+        const client = new Client({
+            url: `${this.dappEndpoint}/graphql`,
+            requestPolicy: 'cache-and-network',
+            exchanges: [
+                cacheExchange,
+                fetchExchange,
+            ],
+        })
+        let cursor: string
+        const timeout = setInterval(async () => {
+            const result = await client.query(GET_NOTICES_QUERY, { cursor, account: account.toLowerCase() }).toPromise()
+            if (!result.data.notices.pageInfo.hasNextPage && !result.data.notices.pageInfo.endCursor) return
+            cursor = result.data.notices.pageInfo.endCursor;
+            callback(decodeNotices(result.data.notices, this.dappABI));
+        }, pollInterval)
+        return () => clearInterval(timeout)
+    }
 }

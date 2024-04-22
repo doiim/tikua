@@ -29,9 +29,9 @@ export const getCartesiContractAbi = function importJSON(contract: ContractName)
 export const decodeNotices = (notices: NoticesRawObject, abi: Abi) => {
     return notices.edges.map((edge) => {
         return {
-            index: edge.node.index,
+            index: edge.node.input.index,
             msgSender: edge.node.input.msgSender,
-            timestamp: edge.node.input.timestamp,
+            timestamp: new Date(Number(edge.node.input.timestamp) * 1000),
             payload: decodeFunctionData({ abi, data: edge.node.payload as `0x${string}` })
         }
     }) as NoticeDecoded[]

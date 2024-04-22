@@ -1,8 +1,12 @@
-# Cartesi SDK
+<p align="center">
+  <a href="https://github.com/doiim/cartesi-sdk" title="Tikua Cartesi SDK">
+    <img src="https://github.com/doiim/cartesi-sdk/assets/13040410/5e55dfe1-1f26-4d3e-b437-a531ac6e73f1" alt="Tikua logo" width="200" />
+  </a>
+</p>
 
-Our idea is to create a package that simplifies implementation on frontend tricky tasks like deal with Parameters conversion, payload processing, send/receive protocols.
+# Tikua
 
-We aim to create a Isomorphic JS package to use with any visual library on Browser or Terminal. The SDK will support any provider or network. All configurable and allowing defining an app with multiple chains supported. The SDK should adapt accordingly to the configurations and raise warnings in cases of non-supported provider chains.
+A Isomorphic JS Cartesi package to use with any visual library on Browser or Terminal. The SDK will support any provider or network. All configurable and allowing defining an app with multiple chains supported. The SDK should adapt accordingly to the configurations and raise warnings in cases of non-supported provider chains.
 
 ## Installation
 
@@ -19,7 +23,8 @@ The `CartesiSDK` class is the main entry point for this SDK. It is instantiated 
 - `dappAddress`: The address of your dapp.
 - `dappEndpoint`: The endpoint of your dapp.
 - `provider`: The EIP1193 provider to use.
-- `abi`: The ABI of your dapp.
+- `abi`: The ABI of your dapp. [Human Readable ABI definition](https://abitype.dev/api/human)
+
 - `waitBlocks`: The amount of blocks to wait before considering an input sent. Defaults to 1.
 - `account`: The account to sign transactions. Defaults to the first account returned from `getAddresses()` on the provider.
 
@@ -75,16 +80,37 @@ const unsubscribe = await cartesi.addNoticesListener(1000, (result) => {
 });
 ```
 
+#### `addMyNoticesListener(pollInterval : number, account:Address,  fn: (report: any) => void)`
+
+Listen for all notices triggered related to your address. This is similar to `addNoticesListener`, but it uses your configured address to filter the results.
+
+- `pollInterval: number`: Time between each request to GraphQL.
+- `account: Address`: The account to listen for notices.
+- `fn: (report: any) => void`: The function to call when a report is received.
+
 Returns an unsubscribe function to stop listening for reports.
+
+```ts
+const myWallet = "0x0123123123123";
+const unsubscribe = await cartesi.addNoticesListener(
+  1000,
+  myWallet,
+  (result) => {
+    console.log(result);
+  }
+);
+```
 
 ## TODO
 
-[ ] Decode properly BigInt arguments
-[ ] Decode timestamps on notices.
-[ ] Initialize SDK variables using local network by default for testing purposes.
+[ ] Initialize SDK variables using local network by
+default for testing purposes.
+
 [ ] Test with different connectors that provide EIP1193Provider.
-[ ] Add examples using Vue and Node as clients.
-[ ] Check the possibility to add custom Notice filters.
+
+## References
+
+[Human Readable ABI definition](https://abitype.dev/api/human)
 
 ## For Maintainers
 

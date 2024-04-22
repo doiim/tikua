@@ -6,15 +6,17 @@ const app = createApp({
   url: process.env.ROLLUP_HTTP_SERVER_URL || "http://127.0.0.1:5004",
 });
 
-const dragonList: number[] = new Array(100).fill(100)
+const dragonList: number[] = new Array(10).fill(100)
 const playersList: Map<Address, number> = new Map()
 
 // define application ABI
 const abi = parseAbi([
-  "function attackDragon(uint256 dragonId) returns (uint256 dragonLife, uint256 playerLife)",
+  "struct Dragon { uint256 id; uint256 life; }",
+  "function attackDragon(uint256 dragonId)",
   "function drinkPotion()",
   "function heroStatus(address player) returns (uint256)",
   "function dragonStatus(uint256 dragonId) returns (uint256)",
+  "function dragonsList() returns (Dragon[])",
 ]);
 
 // handle input encoded as ABI function call
@@ -67,6 +69,15 @@ app.addInspectHandler(async ({ payload }) => {
         result: BigInt(dragonList[Number(dragonId)] || 0)
       })
       app.createReport({ payload: dragonLife })
+      return;
+    case "dragonsList":
+      const dragons = dragonList.map((life, index) => ({ id: BigInt(index), life: BigInt(life) })) as any
+      const result = encodeFunctionResult({
+        abi,
+        functionName: "dragonsList",
+        result: [dragons]
+      })
+      app.createReport({ payload: result })
       return;
   }
 })

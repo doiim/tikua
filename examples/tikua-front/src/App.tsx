@@ -2,8 +2,9 @@ import { useEffect, useState } from 'react'
 import './App.css'
 import Onboard, { WalletState } from '@web3-onboard/core'
 import injectedModule from '@web3-onboard/injected-wallets'
-import { CartesiSDK, Address } from '@doiim/cartesi-sdk'
+import { CartesiSDK, Address } from '@doiim/tikua'
 import ReactJson from '@vahagn13/react-json-view'
+import logo from './assets/logo.png'
 
 // const playersList: Map<Address, number> = new Map()
 // if (!playersList.has('0x0')) playersList.set('0x0', 100)
@@ -32,10 +33,12 @@ const onboard = Onboard({
 
 // Defining Dapp ABI
 const abi = [
+  "struct Dragon { uint256 id; uint256 life; }",
   "function attackDragon(uint256 dragonId)",
   "function drinkPotion()",
   "function heroStatus(address player) returns (uint256)",
   "function dragonStatus(uint256 dragonId) returns (uint256)",
+  "function dragonsList() returns (Dragon[])",
 ];
 
 function App() {
@@ -107,6 +110,18 @@ function App() {
     });
   }
 
+  const dragonsList = async (e: any) => {
+    e.preventDefault()
+    const cartesiSDK = new CartesiSDK({
+      provider: onboard.state.get().wallets[0].provider,
+      endpoint: 'http://localhost:8080',
+      address: '0xab7528bb862fB57E8A2BCd567a2e929a0Be56a5e',
+      abi: abi
+    })
+    const status = await cartesiSDK.fetchInspect('dragonsList', []) as any[]
+    setMessage(status);
+  }
+
   /**
    * This function starts a subscription by creating a new CartesiSDK instance
    * and adding a notices listener that updates the message state.
@@ -119,12 +134,18 @@ function App() {
       endpoint: 'http://localhost:8080',
       abi: abi
     })
-    return cartesiSDK.addNoticesListener(1000, (e) => setMessage(e))
+    return cartesiSDK.addMyNoticesListener(
+      1000,
+      onboard.state.get().wallets[0].accounts[0].address as Address,
+      (e) => setMessage(e)
+    )
   }
 
   return (
     <>
-      <h1>Cartesi SDK Example</h1>
+      <img src={logo} width={200} height={200}></img>
+      <h1>Tikua</h1>
+      <p>an isomorphic Cartesi SDK</p>
       <div className="card">
         {wallets.length == 0 ?
           <button onClick={connectWallet}>Connect Wallet</button>
@@ -139,6 +160,9 @@ function App() {
           {wallets.length > 0 ?
             <button onClick={checkLife}>Check Hero Status</button> : null
           }
+          {wallets.length > 0 ?
+            <button onClick={dragonsList}>List Dragons</button> : null
+          }
         </div>
         <form>
           <label>
@@ -150,7 +174,7 @@ function App() {
         </form>
 
         <div className='message'>
-          <ReactJson theme="monokai" displayDataTypes={false} src={message} style={{color: 'rgb(253, 151, 31)'}} />
+          <ReactJson theme="monokai" displayDataTypes={false} src={message} style={{ color: 'rgb(253, 151, 31)' }} />
         </div>
       </div>
     </>

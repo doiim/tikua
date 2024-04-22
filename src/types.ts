@@ -74,6 +74,29 @@ query GetNotices($cursor: String) {
         }
     }`;
 
+// GraphQL query to retrieve notices given a cursor
+export const GET_MY_NOTICES_QUERY = gql`
+query GetNotices($cursor: String, $account: String) {
+        notices(first: 10, after: $cursor) {
+            totalCount
+            pageInfo {
+                hasNextPage
+                endCursor
+            }
+            edges {
+                node {
+                    index
+                    input (msgSender: $account) {
+                        index
+                      	msgSender
+                      	timestamp
+                    }
+                    payload
+                }
+            }
+        }
+    }`;
+
 
 export type NoticesRawObject = {
     totalCount: number;
@@ -97,6 +120,6 @@ export type NoticesRawObject = {
 export type NoticeDecoded = {
     index: number;
     msgSender: Address;
-    timestamp: number;
+    timestamp: Date;
     payload: any;
 }

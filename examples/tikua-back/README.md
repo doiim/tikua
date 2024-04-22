@@ -1,4 +1,4 @@
-# Deroll tamplate to be used with Cartesi SDK
+# Deroll tamplate to be used with Tikua - Cartesi SDK
 
 This is a [Sunodo](https://sunodo.io) template for Cartesi applications that use the [Deroll](https://github.com/tuler/deroll) framework.
 
