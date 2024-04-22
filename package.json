@@ -1,11 +1,11 @@
 {
   "name": "@doiim/tikua",
-  "version": "0.3.0",
+  "version": "0.3.1",
   "author": "doiim",
   "description": "A Isomorphic JS/TS package to use with any framework on Browser or Terminal for Cartesi dapps.",
   "repository": {
     "type": "git",
-    "url": "https://github.com/doiim/cartesi-sdk"
+    "url": "https://github.com/doiim/tikua"
   },
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -16,7 +16,6 @@
     "build": "node ./scripts/fetchDeployments.js && webpack",
     "deploy": "npm run build && npm publish --access public"
   },
-  "keywords": [],
   "license": "Apache-2.0",
   "devDependencies": {
     "@cartesi/rollups": "latest",
@@ -30,5 +29,18 @@
   "dependencies": {
     "@urql/core": "^4.3.0",
     "viem": "^2.9.3"
-  }
+  },
+  "keywords": [
+    "cartesi",
+    "dapp",
+    "rollups",
+    "ethereum",
+    "viem",
+    "isomorphic",
+    "js",
+    "ts",
+    "framework",
+    "browser",
+    "terminal"
+  ]
 }

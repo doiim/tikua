@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 import './App.css'
 import Onboard, { WalletState } from '@web3-onboard/core'
 import injectedModule from '@web3-onboard/injected-wallets'
-import { CartesiSDK, Address } from '@doiim/tikua'
+import { Tikua, Address } from '@doiim/tikua'
 import ReactJson from '@vahagn13/react-json-view'
 import logo from './assets/logo.png'
 
@@ -64,32 +64,32 @@ function App() {
 
   const attackDragon = async (e: any) => {
     e.preventDefault()
-    const cartesiSDK = new CartesiSDK({
+    const tikua = new Tikua({
       provider: onboard.state.get().wallets[0].provider,
       address: '0xab7528bb862fB57E8A2BCd567a2e929a0Be56a5e',
       account: wallets[0].accounts[0].address as Address,
       abi
     })
-    await cartesiSDK.sendInput('attackDragon', [dragonId])
+    await tikua.sendInput('attackDragon', [dragonId])
   }
 
   const drinkPotion = async () => {
-    const cartesiSDK = new CartesiSDK({
+    const tikua = new Tikua({
       provider: onboard.state.get().wallets[0].provider,
       address: '0xab7528bb862fB57E8A2BCd567a2e929a0Be56a5e',
       account: wallets[0].accounts[0].address as Address,
       abi
     })
-    await cartesiSDK.sendInput('drinkPotion', [])
+    await tikua.sendInput('drinkPotion', [])
   }
 
   const checkLife = async () => {
-    const cartesiSDK = new CartesiSDK({
+    const tikua = new Tikua({
       provider: onboard.state.get().wallets[0].provider,
       endpoint: 'http://localhost:8080',
       abi
     })
-    const status = await cartesiSDK.fetchInspect('heroStatus', [wallets[0].accounts[0].address as Address])
+    const status = await tikua.fetchInspect('heroStatus', [wallets[0].accounts[0].address as Address])
     setMessage({
       life: status
     })
@@ -97,13 +97,13 @@ function App() {
 
   const checkDragon = async (e: any) => {
     e.preventDefault()
-    const cartesiSDK = new CartesiSDK({
+    const tikua = new Tikua({
       provider: onboard.state.get().wallets[0].provider,
       endpoint: 'http://localhost:8080',
       address: '0xab7528bb862fB57E8A2BCd567a2e929a0Be56a5e',
       abi: abi
     })
-    const status = await cartesiSDK.fetchInspect('dragonStatus', [dragonId])
+    const status = await tikua.fetchInspect('dragonStatus', [dragonId])
     setMessage({
       dragonId: dragonId,
       status: status
@@ -112,13 +112,13 @@ function App() {
 
   const dragonsList = async (e: any) => {
     e.preventDefault()
-    const cartesiSDK = new CartesiSDK({
+    const tikua = new Tikua({
       provider: onboard.state.get().wallets[0].provider,
       endpoint: 'http://localhost:8080',
       address: '0xab7528bb862fB57E8A2BCd567a2e929a0Be56a5e',
       abi: abi
     })
-    const status = await cartesiSDK.fetchInspect('dragonsList', []) as any[]
+    const status = await tikua.fetchInspect('dragonsList', []) as any[]
     setMessage(status);
   }
 
@@ -129,12 +129,12 @@ function App() {
    * @return {Promise<void>} Returns a Promise that resolves when the notices listener is added.
    */
   const startSubscription = async () => {
-    const cartesiSDK = new CartesiSDK({
+    const tikua = new Tikua({
       provider: onboard.state.get().wallets[0].provider,
       endpoint: 'http://localhost:8080',
       abi: abi
     })
-    return cartesiSDK.addMyNoticesListener(
+    return tikua.addMyNoticesListener(
       1000,
       onboard.state.get().wallets[0].accounts[0].address as Address,
       (e) => setMessage(e)

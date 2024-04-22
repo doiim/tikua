@@ -1,7 +1,7 @@
 import { gql } from "@urql/core";
 import { Address } from 'viem';
 
-export interface SDKParams {
+export interface TikuaParams {
     provider?: any,
     address?: Address,
     endpoint?: string,

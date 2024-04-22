@@ -11,14 +11,14 @@ A Isomorphic JS Cartesi package to use with any visual library on Browser or Ter
 ## Installation
 
 ```sh
-npm install -s cartesi-sdk
+npm install -s @doiim/tikua
 ```
 
 ## Usage
 
 ### CartesiSDK
 
-The `CartesiSDK` class is the main entry point for this SDK. It is instantiated with the following parameters:
+The `Tikua` class is the main entry point for this SDK. It is instantiated with the following parameters:
 
 - `dappAddress`: The address of your dapp.
 - `dappEndpoint`: The endpoint of your dapp.
@@ -33,12 +33,7 @@ const abi = parseAbi([
   "function attackDragon(uint256 dragonId, string weapon)",
   "function dragonStatus(uint256 dragonId) returns (uint256)",
 ]);
-const cartesi = new CartesiSDK(
-  "0x0123123",
-  "https://host.backend/",
-  provider,
-  abi
-);
+const tikua = new Tikua("0x0123123", "https://host.backend/", provider, abi);
 ```
 
 #### `sendInput(fn: string, args: any[])`
@@ -51,7 +46,7 @@ Send a function input to the Cartesi contract.
 Returns a promise that resolves to the transaction hash of the sent input.
 
 ```ts
-const txHash = await cartesi.sendInput("attackDragon", [1, "sword"]);
+const txHash = await tikua.sendInput("attackDragon", [1, "sword"]);
 ```
 
 #### `fetchInspect(id: string)`
@@ -62,7 +57,7 @@ Fetch the inspect data for a transaction ID.
 - `args: any[]`: Array of arguments to be passed to function.
 
 ```ts
-const status = await cartesiSDK.fetchInspect("dragonStatus", [dragonId]);
+const status = await tikua.fetchInspect("dragonStatus", [dragonId]);
 ```
 
 Returns a promise that resolves to the inspect data of the transaction.
@@ -75,7 +70,7 @@ Listen for all notices triggered by the Cartesi Machine
 - `fn: (report: any) => void`: The function to call when a report is received.
 
 ```ts
-const unsubscribe = await cartesi.addNoticesListener(1000, (result) => {
+const unsubscribe = await tikua.addNoticesListener(1000, (result) => {
   console.log(result);
 });
 ```
@@ -92,21 +87,10 @@ Returns an unsubscribe function to stop listening for reports.
 
 ```ts
 const myWallet = "0x0123123123123";
-const unsubscribe = await cartesi.addNoticesListener(
-  1000,
-  myWallet,
-  (result) => {
-    console.log(result);
-  }
-);
+const unsubscribe = await tikua.addNoticesListener(1000, myWallet, (result) => {
+  console.log(result);
+});
 ```
-
-## TODO
-
-[ ] Initialize SDK variables using local network by
-default for testing purposes.
-
-[ ] Test with different connectors that provide EIP1193Provider.
 
 ## References
 

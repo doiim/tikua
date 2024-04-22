@@ -31,9 +31,9 @@ import {
     subscriptionExchange,
 } from "@urql/core"
 import { decodeNotices, getCartesiContractAbi, getCartesiDeploymentAddress } from './utils';
-import { GET_NOTICES_QUERY, SDKParams } from './types';
+import { GET_NOTICES_QUERY, TikuaParams } from './types';
 
-export class CartesiSDK {
+export class Tikua {
     private readonly provider: EIP1193Provider;
     private readonly dappAddress!: Address;
     private readonly dappEndpoint!: string;
@@ -54,7 +54,7 @@ export class CartesiSDK {
      * @param {number} waitBlocks - (optional) The number of confirmation blocks after send inputs
      * @param {string} account - (optional) The account for the SDK
      */
-    public constructor({ provider, address, endpoint, abi, waitBlocks, account }: SDKParams) {
+    public constructor({ provider, address, endpoint, abi, waitBlocks, account }: TikuaParams) {
         this.provider = provider as EIP1193Provider;
         if (address) this.dappAddress = address;
         if (endpoint) this.dappEndpoint = endpoint;

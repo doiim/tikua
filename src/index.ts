@@ -1,4 +1,4 @@
-export { CartesiSDK } from './core'
+export { Tikua } from './core'
 export {
     getCartesiDeploymentAddress,
     getCartesiContractAbi
@@ -8,7 +8,7 @@ export {
     namesByChain,
     ContractName,
     ChainName,
-    SDKParams,
+    TikuaParams,
 } from './types'
 export {
     parseAbi,
