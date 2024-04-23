@@ -30,8 +30,8 @@ import {
     fetchExchange,
     subscriptionExchange,
 } from "@urql/core"
-import { decodeNotices, getCartesiContractAbi, getCartesiDeploymentAddress } from './utils';
-import { GET_NOTICES_QUERY, TikuaParams } from './types';
+import { decodeNotices, getCartesiContractAbi, getCartesiDeploymentAddress } from './utils.js';
+import { GET_NOTICES_QUERY, TikuaParams } from './types.js';
 
 export class Tikua {
     private readonly provider: EIP1193Provider;
@@ -170,7 +170,7 @@ export class Tikua {
             args
         })
         const response = await fetch(`${this.dappEndpoint}/inspect/${payloadRequest}`);
-        const data = await response.json();
+        const data = await response.json() as { reports: any[] };
         return decodeFunctionResult({
             abi: this.dappABI,
             functionName: fn,

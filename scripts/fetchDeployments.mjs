@@ -1,5 +1,10 @@
-const fs = require('fs');
-const path = require('path');
+import fs from 'fs';
+import { fileURLToPath } from 'url';
+import path from 'path';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
 const deploymentsPath = path.join(__dirname, '..', 'node_modules', '@cartesi', 'rollups', 'deployments');
 const deploymentsDestPath = path.join(__dirname, '..', 'src', 'deployments');
 const abisDestPath = path.join(__dirname, '..', 'src', 'abis');

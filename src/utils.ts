@@ -1,5 +1,5 @@
 import { Address, Abi, decodeFunctionData } from 'viem'
-import { ChainName, ContractName, NoticeDecoded, NoticesRawObject, namesByChain } from './types';
+import { ChainName, ContractName, NoticeDecoded, NoticesRawObject, namesByChain } from './types.js';
 
 /**
  * Retrieves the deployment address for a given contract on a specified chain.
@@ -11,7 +11,7 @@ import { ChainName, ContractName, NoticeDecoded, NoticesRawObject, namesByChain 
 export const getCartesiDeploymentAddress = (chainId: number | Address, contract: ContractName) => {
     const decoded = (typeof chainId === 'number' ? '0x' + chainId.toString(16) : chainId) as ChainName;
     // We replace network foundry with Mainnet cause it is the same addresses
-    const deploymentAddresses = require(`./deployments/${decoded == '0x7a69' ? 'mainnet' : namesByChain[decoded as ChainName]}.json`) as { [key: string]: string };
+    const deploymentAddresses = require(`../deployments/${decoded == '0x7a69' ? 'mainnet' : namesByChain[decoded as ChainName]}.json`) as { [key: string]: string };
     return deploymentAddresses[contract] as Address
 }
 
@@ -23,7 +23,7 @@ export const getCartesiDeploymentAddress = (chainId: number | Address, contract:
  * @return {any[]} The ABI of the specified Cartesi contract.
  */
 export const getCartesiContractAbi = function importJSON(contract: ContractName) {
-    return require(`./abis/${contract}.json`) as Abi;
+    return require(`../abis/${contract}.json`) as Abi;
 }
 
 export const decodeNotices = (notices: NoticesRawObject, abi: Abi) => {

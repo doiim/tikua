@@ -1,15 +1,15 @@
-export { Tikua } from './core'
+export { Tikua } from './core.js'
 export {
     getCartesiDeploymentAddress,
     getCartesiContractAbi
-} from './utils'
+} from './utils.js'
 export {
     chainsByName,
     namesByChain,
     ContractName,
     ChainName,
     TikuaParams,
-} from './types'
+} from './types.js'
 export {
     parseAbi,
     Address
