@@ -19,5 +19,5 @@ cat > ./dist/cjs/package.json <<!EOF
 # }
 # !EOF
 
-cp -rfp src/abis/ ./dist/deployments
-cp -rfp src/deployments/ ./dist/abis
+cp -rfp src/abis/ ./dist/abis
+cp -rfp src/deployments/ ./dist/deployments

@@ -10,7 +10,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@doiim/tikua": "^0.3.2",
+    "@doiim/tikua": "^0.3.3",
     "@urql/core": "^5.0.0",
     "@vahagn13/react-json-view": "^1.0.15",
     "@web3-onboard/core": "^2.21.4",

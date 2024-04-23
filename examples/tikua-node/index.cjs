@@ -26,11 +26,19 @@ const client = createWalletClient({
 const tikua = new Tikua({
     endpoint: 'http://localhost:8080',
     provider: client,
+    address: '0xab7528bb862fB57E8A2BCd567a2e929a0Be56a5e',
     abi: abi
 })
 
+tikua.addNoticesListener(1000, (result) => {
+    console.log(result)
+})
+
 const main = async () => {
-    console.log(await tikua.fetchInspect('heroStatus', [account.address]))
+    console.log('HERO STATUS:', await tikua.fetchInspect('heroStatus', [account.address]))
+    console.log('DRAGONS LIST:', await tikua.fetchInspect('dragonsList', []))
+
+    await tikua.sendInput('attackDragon', [1])
 }
 
 main()
