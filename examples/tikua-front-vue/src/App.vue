@@ -111,7 +111,7 @@ const attackDragon = async () => {
 </script>
 
 <template>
-  <div class="mx-auto my-auto flex flex-col justify-center items-center w-1/2 text-stone-600">
+  <div class="text-stone-600">
     <img src="./assets/logo.png" width=200 height=200 />
     <div class="text-center">
       <h1 class="text-5xl font-semibold">Tikua</h1>
@@ -145,10 +145,12 @@ const attackDragon = async () => {
 
     <form class="bg-stone-50 rounded-lg p-4 flex flex-col gap-2 border border-stone-100 w-[600px] my-2">
       <h1 class="uppercase text-sm font-semibold text-stone-500">Dragon</h1>
-      <div class="flex gap-4">
+      <div>
         <button @click.prevent="dragonsList"
           class="bg-stone-100 rounded-lg p-2 px-4  text-md hover:outline hover:outline-1 hover:outline-blue-600">List
           All Dragons</button>
+      </div>
+      <div class="flex gap-4">
         <input v-model="dragonIdInput" placeholder="Enter a dragon ID"
           class="bg-white rounded-lg p-2 px-4  text-md focus:outline focus:outline-1 focus:outline-blue-600 w-40" />
 
