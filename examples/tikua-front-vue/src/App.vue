@@ -5,6 +5,10 @@ import { Tikua, Address } from '@doiim/tikua'
 // TODO: didn't work as expected
 // import VueJsonPretty from 'vue-json-pretty'
 
+// Add property to allow JSON to be serialized on the frontend
+// @ts-ignore
+BigInt.prototype.toJSON = function () { return this.toString() }
+
 const ABI = [
   "struct Dragon { uint256 id; uint256 life; }",
   "function attackDragon(uint256 dragonId)",
@@ -21,6 +25,7 @@ const message = ref({})
 
 const connect = async () => {
   if (!window.ethereum) throw Error('MetaMask not found')
+  await window.ethereum.request({ method: 'wallet_addEthereumChain', params: [{ chainId: '0x7A69', chainName: "Local Anvil", nativeCurrency: {name: 'Ether', symbol: 'ETH', decimals: 18},  rpcUrls: ['http://localhost:8545'] }] });
   const [account] = await window.ethereum.request({ method: 'eth_requestAccounts' })
   if (!account) throw Error('MetaMask reject')
   walletAddress.value = account
@@ -31,7 +36,7 @@ const connect = async () => {
 const startSubscription = async () => {
   if(!provider.value || !walletAddress.value) throw Error('Wallet not connected') 
   const tikua = new Tikua({
-    provider: provider,
+    provider: provider.value,
     endpoint: 'http://localhost:8080',
     abi: ABI
   })
@@ -40,6 +45,67 @@ const startSubscription = async () => {
     walletAddress.value,
     (e) => message.value = e
   )
+}
+
+const drinkPotion = async () => {
+  if(!walletAddress.value) return
+  const tikua = new Tikua({
+    provider: provider.value,
+    address: '0xab7528bb862fB57E8A2BCd567a2e929a0Be56a5e',
+    account: walletAddress.value,
+    abi: ABI
+  })
+  await tikua.sendInput('drinkPotion', [])
+}
+
+const checkLife = async () => {
+  if(!walletAddress.value) return
+    const tikua = new Tikua({
+      provider: provider.value,
+      endpoint: 'http://localhost:8080',
+      abi: ABI
+    })
+    const status = await tikua.fetchInspect('heroStatus', [walletAddress.value])
+    message.value = {
+      life: status
+    }
+  }
+
+const dragonsList = async () => {
+  const tikua = new Tikua({
+    provider: provider.value,
+    endpoint: 'http://localhost:8080',
+    address: '0xab7528bb862fB57E8A2BCd567a2e929a0Be56a5e',
+    abi: ABI
+  })
+  const status = await tikua.fetchInspect('dragonsList', []) as any[]
+  message.value = status
+}
+
+const checkDragon = async () => {
+  if(dragonIdInput.value === undefined) return
+  const tikua = new Tikua({
+    provider: provider.value,
+    endpoint: 'http://localhost:8080',
+    address: '0xab7528bb862fB57E8A2BCd567a2e929a0Be56a5e',
+    abi: ABI
+  })
+  const status = await tikua.fetchInspect('dragonStatus', [dragonIdInput.value])
+  message.value = {
+    drago: dragonIdInput.value,
+    status: status
+  }
+}
+
+const attackDragon = async () => {
+  if(dragonIdInput.value === undefined) return
+  const tikua = new Tikua({
+    provider: provider.value,
+    address: '0xab7528bb862fB57E8A2BCd567a2e929a0Be56a5e',
+    account: walletAddress.value,
+    abi: ABI
+  })
+  await tikua.sendInput('attackDragon', [dragonIdInput.value])
 }
 
 </script>
@@ -58,17 +124,17 @@ const startSubscription = async () => {
       </p>
 
       <div class='heroCommands'>
-          <button :disabled="!walletAddress" >Drink Potion</button>
-          <button :disabled="!walletAddress">Check Hero Status</button>
-          <button :disabled="!walletAddress">List Dragons</button>
+          <button :disabled="!walletAddress" @click="drinkPotion">Drink Potion</button>
+          <button :disabled="!walletAddress" @click="checkLife">Check Hero Status</button>
+          <button @click="dragonsList">List Dragons</button>
       </div>
       <form>
         <label>
           <span>Dragon ID</span>
           <input type="number" v-model="dragonIdInput" />
         </label>
-        <input type="submit" value="Dragon Status"  />
-        <input type="submit" value="Attack Dragon"  />
+        <button @click.prevent="checkDragon">Dragon Status</button>
+        <button @click.prevent="attackDragon" :disabled="!walletAddress">Attack Dragon</button>
       </form>
 
       <div class='message' >
