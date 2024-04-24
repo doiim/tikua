@@ -160,7 +160,7 @@ const attackDragon = async () => {
       </div>
       <div class="text-xs mt-2 flex flex-col gap-1">
         <p><strong>Check Health:</strong> This is a read-only request that sends an inspect request to the dApp and retrieves a report on the health status.</p>
-        <p><strong>Drink Potion:</strong> This is a write request that sends an input to the dApp, triggering the execution and advance, which will generate notices and reports.</p>
+        <p><strong>Drink Potion:</strong> This is a write request that sends an input to the dApp, triggering the advance execution, which will generate notices.</p>
       </div>
     </div>
 
@@ -184,7 +184,7 @@ const attackDragon = async () => {
       </div>
       <div class="text-xs mt-2 flex flex-col gap-1">
         <p><strong>List All Dragons and Check Health:</strong> This is a read-only request that sends an inspect request to the dApp and retrieves a report with all dragons.</p>
-        <p><strong>Attack:</strong> This is a write request that sends an input to the dApp, triggering the execution and advance, which will generate notices and reports.</p>
+        <p><strong>Attack:</strong> This is a write request that sends an input to the dApp, triggering the advance execution, which will generate notices.</p>
       </div>
     </form>
 
