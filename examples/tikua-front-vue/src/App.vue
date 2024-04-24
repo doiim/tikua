@@ -47,10 +47,7 @@ const startSubscription = async () => {
   tikua.addMyNoticesListener(
     1000,
     walletAddress.value,
-    (e) => {
-      console.log('New event', e)
-      message.value = e
-    }
+    (e) => message.value = e
   )
 }
 
@@ -149,10 +146,6 @@ const attackDragon = async () => {
         Wallet</button>
       <p v-else>Wallet: <span class="text-orange-400">{{ walletAddress }}</span></p>
     </div>
-
-    <p class="my-4 text-center">
-      After connect your wallet successfully. Fill the form above.
-    </p>
 
     <div
       class="bg-stone-50 dark:bg-stone-700 rounded-lg p-6 flex flex-col gap-2 border border-stone-100 dark:border-stone-800 w-[600px] my-2">
