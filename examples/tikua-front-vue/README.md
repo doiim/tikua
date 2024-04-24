@@ -1,9 +1,22 @@
-# Vue 3 + TypeScript + Vite
+# Vue.JS Client Example - Tikua - Cartesi SDK
 
-This template should help get you started developing with Vue 3 and TypeScript in Vite. The template uses Vue 3 `<script setup>` SFCs, check out the [script setup docs](https://v3.vuejs.org/api/sfc-script-setup.html#sfc-script-setup) to learn more.
+This example project demonstrates how to use the Tikua client in a JavaScript frontend application. The project uses [Vue.JS](https://vuejs.org) and includes an example of how to interact with a dApp deployed on the network. It provides a simple user interface to send inputs to the dapp, drink potions, and check the hero status.
 
-## Recommended Setup
+Overall, this example project should help you get started with using the Cartesi SDK client in a JavaScript frontend application.
 
-- [VS Code](https://code.visualstudio.com/) + [Vue - Official](https://marketplace.visualstudio.com/items?itemName=Vue.volar) (previously Volar) and disable Vetur
+## Usage
 
-- Use [vue-tsc](https://github.com/vuejs/language-tools/tree/master/packages/tsc) for performing the same type checking from the command line, or for generating d.ts files for SFCs.
+Be sure that the backend example is running before run this client.
+
+```sh
+npm install
+npm run dev
+```
+
+## References
+
+For documentation on how to develop Cartesi applications refer to https://docs.cartesi.io
+
+For documentation on how to use Sunodo refer to https://docs.sunodo.io
+
+For documentation on how to use Deroll refer to https://github.com/tuler/deroll
