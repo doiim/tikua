@@ -23,6 +23,7 @@ const provider = ref()
 const dragonIdInput = ref('')
 const message = ref<any>({})
 const isDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches;
+const isLoading = ref(false)
 
 const connect = async () => {
   if (!window.ethereum) throw Error('MetaMask not found')
@@ -44,7 +45,10 @@ const startSubscription = async () => {
   tikua.addMyNoticesListener(
     1000,
     walletAddress.value,
-    (e) => message.value = e
+    (e) => {
+      console.log('New event', e)
+      message.value = e
+    }
   )
 }
 
@@ -66,10 +70,12 @@ const checkLife = async () => {
     endpoint: 'http://localhost:8080',
     abi: ABI
   })
+  isLoading.value = true
   const status = await tikua.fetchInspect('heroStatus', [walletAddress.value])
   message.value = {
     life: status
   }
+  isLoading.value = false
 }
 
 const dragonsList = async () => {
@@ -79,8 +85,10 @@ const dragonsList = async () => {
     address: '0xab7528bb862fB57E8A2BCd567a2e929a0Be56a5e',
     abi: ABI
   })
+  isLoading.value = true
   const status = await tikua.fetchInspect('dragonsList', []) as any[]
   message.value = status
+  isLoading.value = false
 }
 
 const checkDragon = async () => {
@@ -91,11 +99,13 @@ const checkDragon = async () => {
     address: '0xab7528bb862fB57E8A2BCd567a2e929a0Be56a5e',
     abi: ABI
   })
+  isLoading.value = true
   const status = await tikua.fetchInspect('dragonStatus', [dragonIdInput.value])
   message.value = {
     drago: dragonIdInput.value,
     status: status
   }
+  isLoading.value = false
 }
 
 const attackDragon = async () => {
@@ -136,10 +146,10 @@ const attackDragon = async () => {
       <h1 class="uppercase text-sm font-semibold text-stone-500 dark:text-stone-300">Hero</h1>
       <div class="flex gap-4">
         <button :disabled="!walletAddress" @click="checkLife"
-          class="bg-stone-100 dark:bg-stone-800 rounded-lg p-2 px-4  text-md hover:outline hover:outline-1 hover:outline-blue-600">Check
+          class="bg-stone-100 dark:bg-stone-800 rounded-lg p-2 px-4  text-md hover:outline hover:outline-1 hover:outline-blue-600 disabled:text-gray-300 disabled:outline-none">Check
           Health</button>
         <button :disabled="!walletAddress" @click="drinkPotion"
-          class="bg-stone-100 dark:bg-stone-800 rounded-lg p-2 px-4  text-md hover:outline hover:outline-1 hover:outline-blue-600">Drink
+          class="bg-stone-100 dark:bg-stone-800 rounded-lg p-2 px-4  text-md hover:outline hover:outline-1 hover:outline-blue-600 disabled:text-gray-300 disabled:outline-none">Drink
           Potion</button>
       </div>
     </div>
@@ -150,7 +160,7 @@ const attackDragon = async () => {
       <h1 class="uppercase text-sm font-semibold text-stone-500 dark:text-stone-300">Dragon</h1>
       <div>
         <button @click.prevent="dragonsList"
-          class="bg-stone-100 dark:bg-stone-800 rounded-lg p-2 px-4  text-md hover:outline hover:outline-1 hover:outline-blue-600">List
+          class="bg-stone-100 dark:bg-stone-800 rounded-lg p-2 px-4  text-md hover:outline hover:outline-1 hover:outline-blue-600 disabled:text-gray-300 disabled:outline-none">List
           All Dragons</button>
       </div>
       <div class="flex gap-4">
@@ -158,15 +168,29 @@ const attackDragon = async () => {
           class="bg-white dark:bg-stone-800 rounded-lg p-2 px-4  text-md focus:outline focus:outline-1 focus:outline-blue-600 w-40" />
 
         <button @click.prevent="checkDragon" v-if="dragonIdInput"
-          class="bg-stone-100 dark:bg-stone-800 rounded-lg p-2 px-4  text-md hover:outline hover:outline-1 hover:outline-blue-600">Check
+          class="bg-stone-100 dark:bg-stone-800 rounded-lg p-2 px-4  text-md hover:outline hover:outline-1 hover:outline-blue-600 disabled:text-gray-300 disabled:outline-none">Check
           Health</button>
         <button @click.prevent="attackDragon" :disabled="!walletAddress" v-if="dragonIdInput"
-          class="bg-stone-100 dark:bg-stone-800 rounded-lg p-2 px-4  text-md hover:outline hover:outline-1 hover:outline-blue-600">Attack</button>
+          class="bg-stone-100 dark:bg-stone-800 rounded-lg p-2 px-4  text-md hover:outline hover:outline-1 hover:outline-blue-600 disabled:text-gray-300 disabled:outline-none">Attack</button>
       </div>
     </form>
 
-    <VueJsonPretty :data="message" :show-icon="true" :theme="isDarkMode ? 'dark' : 'light'"
-      class="bg-stone-50 dark:bg-stone-700 rounded-lg p-4" />
 
+    
+
+    <div class="bg-stone-50 dark:bg-stone-700 rounded-lg p-4 my-2">
+      <svg v-if="isLoading" width="50" height="20" viewBox="0 0 50 20">
+        <circle cx="10" cy="10" r="4" fill="#000">
+          <animate attributeName="opacity" values="1;0;0;0;0;0;1" dur="1s" repeatCount="indefinite" />
+        </circle>
+        <circle cx="25" cy="10" r="4" fill="#000">
+          <animate attributeName="opacity" values="0;1;0;0;0;0;0" dur="1s" repeatCount="indefinite" />
+        </circle>
+        <circle cx="40" cy="10" r="4" fill="#000">
+          <animate attributeName="opacity" values="0;0;1;0;0;0;0" dur="1s" repeatCount="indefinite" />
+        </circle>
+      </svg>
+      <VueJsonPretty v-else :data="message" :show-icon="true" :theme="isDarkMode ? 'dark' : 'light'" />
+    </div>
   </div>
 </template>
