@@ -180,7 +180,7 @@ const attackDragon = async () => {
       </div>
     </form>
 
-    <div class="bg-stone-50 dark:bg-stone-700 rounded-lg p-6 my-4">
+    <div class="bg-stone-50 dark:bg-stone-700 rounded-lg p-6 my-4 w-[600px] overflow-auto">
       <svg v-if="isLoading" width="50" height="20" viewBox="0 0 50 20">
         <circle cx="10" cy="10" r="4" fill="#000">
           <animate attributeName="opacity" values="1;0;0;0;0;0;1" dur="1s" repeatCount="indefinite" />
