@@ -158,6 +158,10 @@ const attackDragon = async () => {
           class="bg-stone-100 dark:bg-stone-800 rounded-lg p-2 px-4  text-md outline outline-slate-200 hover:outline-1 hover:outline-blue-600 disabled:text-gray-300 disabled:outline-none">Drink
           Potion</button>
       </div>
+      <div class="text-xs mt-2 flex flex-col gap-1">
+        <p><strong>Check Health:</strong> This is a read-only request that sends an inspect request to the dApp and retrieves a report on the health status.</p>
+        <p><strong>Drink Potion:</strong> This is a write request that sends an input to the dApp, triggering the execution and advance, which will generate notices and reports.</p>
+      </div>
     </div>
 
     <form
@@ -177,6 +181,10 @@ const attackDragon = async () => {
           Health</button>
         <button @click.prevent="attackDragon" :disabled="!walletAddress" v-if="dragonIdInput"
           class="bg-stone-100 dark:bg-stone-800 rounded-lg p-2 px-4  text-md outline outline-slate-200 hover:outline-1 hover:outline-blue-600 disabled:text-gray-300 disabled:outline-none">Attack</button>
+      </div>
+      <div class="text-xs mt-2 flex flex-col gap-1">
+        <p><strong>List All Dragons and Check Health:</strong> This is a read-only request that sends an inspect request to the dApp and retrieves a report with all dragons.</p>
+        <p><strong>Attack:</strong> This is a write request that sends an input to the dApp, triggering the execution and advance, which will generate notices and reports.</p>
       </div>
     </form>
 
