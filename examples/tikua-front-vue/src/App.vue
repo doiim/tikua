@@ -143,7 +143,6 @@ const attackDragon = async () => {
       <p>an isomorphic Cartesi SDK</p>
     </div>
 
-
     <div class="my-16 text-center">
       <button v-if="!walletAddress" @click="connect"
         class="bg-stone-100 dark:bg-stone-800 rounded-lg p-4 px-6 font-semibold text-xl outline outline-slate-200 hover:outline-1 hover:outline-blue-600">Connect
@@ -151,7 +150,7 @@ const attackDragon = async () => {
       <p v-else>Wallet: <span class="text-orange-400">{{ walletAddress }}</span></p>
     </div>
 
-    <p class="my-2 text-center">
+    <p class="my-4 text-center">
       After connect your wallet successfully. Fill the form above.
     </p>
 
@@ -168,9 +167,8 @@ const attackDragon = async () => {
       </div>
     </div>
 
-
     <form
-      class="bg-stone-50 dark:bg-stone-700 rounded-lg p-6 flex flex-col gap-2 border border-stone-100 dark:border-stone-800 w-[600px] my-2">
+      class="bg-stone-50 dark:bg-stone-700 rounded-lg p-6 flex flex-col gap-2 border border-stone-100 dark:border-stone-800 w-[600px] my-4">
       <h1 class="uppercase text-sm font-semibold text-stone-500 dark:text-stone-300">Dragon</h1>
       <div>
         <button @click.prevent="dragonsList"
@@ -189,7 +187,7 @@ const attackDragon = async () => {
       </div>
     </form>
 
-    <div class="bg-stone-50 dark:bg-stone-700 rounded-lg p-6 my-2">
+    <div class="bg-stone-50 dark:bg-stone-700 rounded-lg p-6 my-4">
       <svg v-if="isLoading" width="50" height="20" viewBox="0 0 50 20">
         <circle cx="10" cy="10" r="4" fill="#000">
           <animate attributeName="opacity" values="1;0;0;0;0;0;1" dur="1s" repeatCount="indefinite" />
