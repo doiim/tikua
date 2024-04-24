@@ -142,7 +142,7 @@ const attackDragon = async () => {
 
     <div class="my-16 text-center">
       <button v-if="!walletAddress" @click="connect"
-        class="bg-stone-100 dark:bg-stone-800 rounded-lg p-4 px-6 font-semibold text-xl outline outline-slate-200 hover:outline-1 hover:outline-blue-600">Connect
+        class="bg-stone-100 dark:bg-stone-800 rounded-lg p-4 px-6 font-semibold text-xl outline outline-slate-200 dark:outline-slate-600 hover:outline-1 hover:outline-blue-600">Connect
         Wallet</button>
       <p v-else>Wallet: <span class="text-orange-400">{{ walletAddress }}</span></p>
     </div>
@@ -152,10 +152,10 @@ const attackDragon = async () => {
       <h1 class="uppercase text-sm font-semibold text-stone-500 dark:text-stone-300">Hero</h1>
       <div class="flex gap-4">
         <button :disabled="!walletAddress" @click="checkLife"
-          class="bg-stone-100 dark:bg-stone-800 rounded-lg p-2 px-4  text-md outline outline-slate-200 hover:outline-1 hover:outline-blue-600 disabled:text-gray-300 disabled:outline-none">Check
+          class="bg-stone-100 dark:bg-stone-800 rounded-lg p-2 px-4  text-md outline outline-slate-200 dark:outline-slate-600 hover:outline-1 hover:outline-blue-600 disabled:text-gray-300 disabled:outline-none">Check
           Health</button>
         <button :disabled="!walletAddress" @click="drinkPotion"
-          class="bg-stone-100 dark:bg-stone-800 rounded-lg p-2 px-4  text-md outline outline-slate-200 hover:outline-1 hover:outline-blue-600 disabled:text-gray-300 disabled:outline-none">Drink
+          class="bg-stone-100 dark:bg-stone-800 rounded-lg p-2 px-4  text-md outline outline-slate-200 dark:outline-slate-600 hover:outline-1 hover:outline-blue-600 disabled:text-gray-300 disabled:outline-none">Drink
           Potion</button>
       </div>
       <div class="text-xs mt-2 flex flex-col gap-1">
@@ -169,18 +169,18 @@ const attackDragon = async () => {
       <h1 class="uppercase text-sm font-semibold text-stone-500 dark:text-stone-300">Dragon</h1>
       <div>
         <button @click.prevent="dragonsList"
-          class="bg-stone-100 dark:bg-stone-800 rounded-lg p-2 px-4  text-md outline outline-slate-200 hover:outline-1 hover:outline-blue-600 disabled:text-gray-300 disabled:outline-none">List
+          class="bg-stone-100 dark:bg-stone-800 rounded-lg p-2 px-4  text-md outline outline-slate-200 dark:outline-slate-600 hover:outline-1 hover:outline-blue-600 disabled:text-gray-300 disabled:outline-none">List
           All Dragons</button>
       </div>
       <div class="flex gap-4">
         <input v-model="dragonIdInput" placeholder="Enter a dragon ID"
-          class="bg-white dark:bg-stone-800 rounded-lg p-2 px-4  text-md outline outline-slate-200 focus:outline-1 focus:outline-blue-600 w-40" />
+          class="bg-white dark:bg-stone-800 rounded-lg p-2 px-4  text-md outline outline-slate-200 dark:outline-slate-600 focus:outline-1 focus:outline-blue-600 w-40" />
 
         <button @click.prevent="checkDragon" v-if="dragonIdInput"
-          class="bg-stone-100 dark:bg-stone-800 rounded-lg p-2 px-4  text-md outline outline-slate-200 hover:outline-1 hover:outline-blue-600 disabled:text-gray-300 disabled:outline-none">Check
+          class="bg-stone-100 dark:bg-stone-800 rounded-lg p-2 px-4  text-md outline outline-slate-200 dark:outline-slate-600 hover:outline-1 hover:outline-blue-600 disabled:text-gray-300 disabled:outline-none">Check
           Health</button>
         <button @click.prevent="attackDragon" :disabled="!walletAddress" v-if="dragonIdInput"
-          class="bg-stone-100 dark:bg-stone-800 rounded-lg p-2 px-4  text-md outline outline-slate-200 hover:outline-1 hover:outline-blue-600 disabled:text-gray-300 disabled:outline-none">Attack</button>
+          class="bg-stone-100 dark:bg-stone-800 rounded-lg p-2 px-4  text-md outline outline-slate-200 dark:outline-slate-600 hover:outline-1 hover:outline-blue-600 disabled:text-gray-300 disabled:outline-none">Attack</button>
       </div>
       <div class="text-xs mt-2 flex flex-col gap-1">
         <p><strong>List All Dragons and Check Health:</strong> This is a read-only request that sends an inspect request to the dApp and retrieves a report with all dragons.</p>
@@ -200,7 +200,7 @@ const attackDragon = async () => {
           <animate attributeName="opacity" values="0;0;1;0;0;0;0" dur="1s" repeatCount="indefinite" />
         </circle>
       </svg>
-      <VueJsonPretty v-else :data="message" :show-icon="true" :theme="isDarkMode ? 'dark' : 'light'" />
+      <VueJsonPretty v-else :data="message"  :theme="isDarkMode ? 'dark' : 'light'" />
     </div>
   </div>
 </template>
