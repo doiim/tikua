@@ -30,8 +30,10 @@ const connect = async () => {
   await window.ethereum.request({ method: 'wallet_addEthereumChain', params: [{ chainId: '0x7A69', chainName: "Local Anvil", nativeCurrency: { name: 'Ether', symbol: 'ETH', decimals: 18 }, rpcUrls: ['http://localhost:8545'] }] });
   const [account] = await window.ethereum.request({ method: 'eth_requestAccounts' })
   if (!account) throw Error('MetaMask reject')
+
   walletAddress.value = account
   provider.value = window.ethereum
+
   await startSubscription()
 }
 
@@ -60,7 +62,13 @@ const drinkPotion = async () => {
     account: walletAddress.value,
     abi: ABI
   })
-  await tikua.sendInput('drinkPotion', [])
+  isLoading.value = true
+  try {
+    await tikua.sendInput('drinkPotion', [])
+  } catch (e) {
+    // console.error(e)
+  }
+  isLoading.value = false
 }
 
 const checkLife = async () => {
@@ -116,7 +124,13 @@ const attackDragon = async () => {
     account: walletAddress.value,
     abi: ABI
   })
-  await tikua.sendInput('attackDragon', [dragonIdInput.value])
+  isLoading.value = true
+  try {
+    await tikua.sendInput('attackDragon', [dragonIdInput.value])
+  } catch (e) {
+    // console.error(e)
+  }
+  isLoading.value = false
 }
 
 </script>
@@ -130,9 +144,9 @@ const attackDragon = async () => {
     </div>
 
 
-    <div class="my-10 text-center">
+    <div class="my-16 text-center">
       <button v-if="!walletAddress" @click="connect"
-        class="bg-stone-100 dark:bg-stone-800 rounded-lg p-2 px-4 font-semibold text-lg hover:outline hover:outline-1 hover:outline-blue-600">Connect
+        class="bg-stone-100 dark:bg-stone-800 rounded-lg p-4 px-6 font-semibold text-xl outline outline-slate-200 hover:outline-1 hover:outline-blue-600">Connect
         Wallet</button>
       <p v-else>Wallet: <span class="text-orange-400">{{ walletAddress }}</span></p>
     </div>
@@ -142,43 +156,40 @@ const attackDragon = async () => {
     </p>
 
     <div
-      class="bg-stone-50 dark:bg-stone-700 rounded-lg p-4 flex flex-col gap-2 border border-stone-100 dark:border-stone-800 w-[600px] my-2">
+      class="bg-stone-50 dark:bg-stone-700 rounded-lg p-6 flex flex-col gap-2 border border-stone-100 dark:border-stone-800 w-[600px] my-2">
       <h1 class="uppercase text-sm font-semibold text-stone-500 dark:text-stone-300">Hero</h1>
       <div class="flex gap-4">
         <button :disabled="!walletAddress" @click="checkLife"
-          class="bg-stone-100 dark:bg-stone-800 rounded-lg p-2 px-4  text-md hover:outline hover:outline-1 hover:outline-blue-600 disabled:text-gray-300 disabled:outline-none">Check
+          class="bg-stone-100 dark:bg-stone-800 rounded-lg p-2 px-4  text-md outline outline-slate-200 hover:outline-1 hover:outline-blue-600 disabled:text-gray-300 disabled:outline-none">Check
           Health</button>
         <button :disabled="!walletAddress" @click="drinkPotion"
-          class="bg-stone-100 dark:bg-stone-800 rounded-lg p-2 px-4  text-md hover:outline hover:outline-1 hover:outline-blue-600 disabled:text-gray-300 disabled:outline-none">Drink
+          class="bg-stone-100 dark:bg-stone-800 rounded-lg p-2 px-4  text-md outline outline-slate-200 hover:outline-1 hover:outline-blue-600 disabled:text-gray-300 disabled:outline-none">Drink
           Potion</button>
       </div>
     </div>
 
 
     <form
-      class="bg-stone-50 dark:bg-stone-700 rounded-lg p-4 flex flex-col gap-2 border border-stone-100 dark:border-stone-800 w-[600px] my-2">
+      class="bg-stone-50 dark:bg-stone-700 rounded-lg p-6 flex flex-col gap-2 border border-stone-100 dark:border-stone-800 w-[600px] my-2">
       <h1 class="uppercase text-sm font-semibold text-stone-500 dark:text-stone-300">Dragon</h1>
       <div>
         <button @click.prevent="dragonsList"
-          class="bg-stone-100 dark:bg-stone-800 rounded-lg p-2 px-4  text-md hover:outline hover:outline-1 hover:outline-blue-600 disabled:text-gray-300 disabled:outline-none">List
+          class="bg-stone-100 dark:bg-stone-800 rounded-lg p-2 px-4  text-md outline outline-slate-200 hover:outline-1 hover:outline-blue-600 disabled:text-gray-300 disabled:outline-none">List
           All Dragons</button>
       </div>
       <div class="flex gap-4">
         <input v-model="dragonIdInput" placeholder="Enter a dragon ID"
-          class="bg-white dark:bg-stone-800 rounded-lg p-2 px-4  text-md focus:outline focus:outline-1 focus:outline-blue-600 w-40" />
+          class="bg-white dark:bg-stone-800 rounded-lg p-2 px-4  text-md outline outline-slate-200 focus:outline-1 focus:outline-blue-600 w-40" />
 
         <button @click.prevent="checkDragon" v-if="dragonIdInput"
-          class="bg-stone-100 dark:bg-stone-800 rounded-lg p-2 px-4  text-md hover:outline hover:outline-1 hover:outline-blue-600 disabled:text-gray-300 disabled:outline-none">Check
+          class="bg-stone-100 dark:bg-stone-800 rounded-lg p-2 px-4  text-md outline outline-slate-200 hover:outline-1 hover:outline-blue-600 disabled:text-gray-300 disabled:outline-none">Check
           Health</button>
         <button @click.prevent="attackDragon" :disabled="!walletAddress" v-if="dragonIdInput"
-          class="bg-stone-100 dark:bg-stone-800 rounded-lg p-2 px-4  text-md hover:outline hover:outline-1 hover:outline-blue-600 disabled:text-gray-300 disabled:outline-none">Attack</button>
+          class="bg-stone-100 dark:bg-stone-800 rounded-lg p-2 px-4  text-md outline outline-slate-200 hover:outline-1 hover:outline-blue-600 disabled:text-gray-300 disabled:outline-none">Attack</button>
       </div>
     </form>
 
-
-    
-
-    <div class="bg-stone-50 dark:bg-stone-700 rounded-lg p-4 my-2">
+    <div class="bg-stone-50 dark:bg-stone-700 rounded-lg p-6 my-2">
       <svg v-if="isLoading" width="50" height="20" viewBox="0 0 50 20">
         <circle cx="10" cy="10" r="4" fill="#000">
           <animate attributeName="opacity" values="1;0;0;0;0;0;1" dur="1s" repeatCount="indefinite" />
