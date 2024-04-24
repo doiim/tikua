@@ -2,8 +2,8 @@
 import { ref } from 'vue';
 import { Tikua, Address } from '@doiim/tikua'
 
-// TODO: didn't work as expected
-// import VueJsonPretty from 'vue-json-pretty'
+import VueJsonPretty from 'vue-json-pretty'
+import 'vue-json-pretty/lib/styles.css';
 
 // Add property to allow JSON to be serialized on the frontend
 // @ts-ignore
@@ -20,12 +20,12 @@ const ABI = [
 
 const walletAddress = ref<Address>();
 const provider = ref()
-const dragonIdInput = ref<number>()
-const message = ref({})
+const dragonIdInput = ref('')
+const message = ref<any>({})
 
 const connect = async () => {
   if (!window.ethereum) throw Error('MetaMask not found')
-  await window.ethereum.request({ method: 'wallet_addEthereumChain', params: [{ chainId: '0x7A69', chainName: "Local Anvil", nativeCurrency: {name: 'Ether', symbol: 'ETH', decimals: 18},  rpcUrls: ['http://localhost:8545'] }] });
+  await window.ethereum.request({ method: 'wallet_addEthereumChain', params: [{ chainId: '0x7A69', chainName: "Local Anvil", nativeCurrency: { name: 'Ether', symbol: 'ETH', decimals: 18 }, rpcUrls: ['http://localhost:8545'] }] });
   const [account] = await window.ethereum.request({ method: 'eth_requestAccounts' })
   if (!account) throw Error('MetaMask reject')
   walletAddress.value = account
@@ -34,7 +34,7 @@ const connect = async () => {
 }
 
 const startSubscription = async () => {
-  if(!provider.value || !walletAddress.value) throw Error('Wallet not connected') 
+  if (!provider.value || !walletAddress.value) throw Error('Wallet not connected')
   const tikua = new Tikua({
     provider: provider.value,
     endpoint: 'http://localhost:8080',
@@ -48,7 +48,7 @@ const startSubscription = async () => {
 }
 
 const drinkPotion = async () => {
-  if(!walletAddress.value) return
+  if (!walletAddress.value) return
   const tikua = new Tikua({
     provider: provider.value,
     address: '0xab7528bb862fB57E8A2BCd567a2e929a0Be56a5e',
@@ -59,17 +59,17 @@ const drinkPotion = async () => {
 }
 
 const checkLife = async () => {
-  if(!walletAddress.value) return
-    const tikua = new Tikua({
-      provider: provider.value,
-      endpoint: 'http://localhost:8080',
-      abi: ABI
-    })
-    const status = await tikua.fetchInspect('heroStatus', [walletAddress.value])
-    message.value = {
-      life: status
-    }
+  if (!walletAddress.value) return
+  const tikua = new Tikua({
+    provider: provider.value,
+    endpoint: 'http://localhost:8080',
+    abi: ABI
+  })
+  const status = await tikua.fetchInspect('heroStatus', [walletAddress.value])
+  message.value = {
+    life: status
   }
+}
 
 const dragonsList = async () => {
   const tikua = new Tikua({
@@ -83,7 +83,7 @@ const dragonsList = async () => {
 }
 
 const checkDragon = async () => {
-  if(dragonIdInput.value === undefined) return
+  if (!dragonIdInput.value) return
   const tikua = new Tikua({
     provider: provider.value,
     endpoint: 'http://localhost:8080',
@@ -98,7 +98,7 @@ const checkDragon = async () => {
 }
 
 const attackDragon = async () => {
-  if(dragonIdInput.value === undefined) return
+  if (!dragonIdInput.value) return
   const tikua = new Tikua({
     provider: provider.value,
     address: '0xab7528bb862fB57E8A2BCd567a2e929a0Be56a5e',
@@ -111,99 +111,59 @@ const attackDragon = async () => {
 </script>
 
 <template>
-  <div class="main">
+  <div class="mx-auto my-auto flex flex-col justify-center items-center w-1/2 text-stone-600">
     <img src="./assets/logo.png" width=200 height=200 />
-    <h1>Tikua</h1>
-    <p>an isomorphic Cartesi SDK</p>
-    <div class="card">
-      <button v-if="!walletAddress" @click="connect">Connect Wallet</button>
-      <p v-else>Wallet: <span class='orange'>{{ walletAddress }}</span></p>
+    <div class="text-center">
+      <h1 class="text-5xl font-semibold">Tikua</h1>
+      <p>an isomorphic Cartesi SDK</p>
+    </div>
 
-      <p>
-        After connect your wallet successfully. Fill the form above.
-      </p>
 
-      <div class='heroCommands'>
-          <button :disabled="!walletAddress" @click="drinkPotion">Drink Potion</button>
-          <button :disabled="!walletAddress" @click="checkLife">Check Hero Status</button>
-          <button @click="dragonsList">List Dragons</button>
-      </div>
-      <form>
-        <label>
-          <span>Dragon ID</span>
-          <input type="number" v-model="dragonIdInput" />
-        </label>
-        <button @click.prevent="checkDragon">Dragon Status</button>
-        <button @click.prevent="attackDragon" :disabled="!walletAddress">Attack Dragon</button>
-      </form>
+    <div class="my-10">
+      <button v-if="!walletAddress" @click="connect"
+        class="bg-stone-100 rounded-lg p-2 px-4 font-semibold text-lg hover:outline hover:outline-1 hover:outline-blue-600">Connect
+        Wallet</button>
+      <p v-else>Wallet: <span class="text-orange-400">{{ walletAddress }}</span></p>
+    </div>
 
-      <div class='message' >
-        {{ message }}
-        
+    <p class="my-2">
+      After connect your wallet successfully. Fill the form above.
+    </p>
+
+    <div class="bg-stone-50 rounded-lg p-4 flex flex-col gap-2 border border-stone-100 w-[600px] my-2">
+      <h1 class="uppercase text-sm font-semibold text-stone-500">Hero</h1>
+      <div class="flex gap-4">
+        <button :disabled="!walletAddress" @click="checkLife"
+          class="bg-stone-100 rounded-lg p-2 px-4  text-md hover:outline hover:outline-1 hover:outline-blue-600">Check
+          Health</button>
+        <button :disabled="!walletAddress" @click="drinkPotion"
+          class="bg-stone-100 rounded-lg p-2 px-4  text-md hover:outline hover:outline-1 hover:outline-blue-600">Drink
+          Potion</button>
       </div>
     </div>
+
+
+    <form class="bg-stone-50 rounded-lg p-4 flex flex-col gap-2 border border-stone-100 w-[600px] my-2">
+      <h1 class="uppercase text-sm font-semibold text-stone-500">Dragon</h1>
+      <div class="flex gap-4">
+        <button @click.prevent="dragonsList"
+          class="bg-stone-100 rounded-lg p-2 px-4  text-md hover:outline hover:outline-1 hover:outline-blue-600">List
+          All Dragons</button>
+        <input v-model="dragonIdInput" placeholder="Enter a dragon ID"
+          class="bg-white rounded-lg p-2 px-4  text-md focus:outline focus:outline-1 focus:outline-blue-600 w-40" />
+
+        <button @click.prevent="checkDragon" v-if="dragonIdInput"
+          class="bg-stone-100 rounded-lg p-2 px-4  text-md hover:outline hover:outline-1 hover:outline-blue-600">Check
+          Health</button>
+        <button @click.prevent="attackDragon" :disabled="!walletAddress" v-if="dragonIdInput"
+          class="bg-stone-100 rounded-lg p-2 px-4  text-md hover:outline hover:outline-1 hover:outline-blue-600">Attack</button>
+
+      </div>
+    </form>
+
+    <div class="self-start my-2">
+      <VueJsonPretty :data="message" :show-icon="true" theme="dark" />
+    </div>
+
   </div>
 </template>
-
-<style scoped>
-.main {
-  max-width: 1280px;
-  margin: 0 auto;
-  padding: 2rem;
-  text-align: center;
-}
-
-.logo {
-  height: 6em;
-  padding: 1.5em;
-  will-change: filter;
-  transition: filter 300ms;
-}
-.logo:hover {
-  filter: drop-shadow(0 0 2em #646cffaa);
-}
-.logo.react:hover {
-  filter: drop-shadow(0 0 2em #61dafbaa);
-}
-
-@keyframes logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
-}
-
-@media (prefers-reduced-motion: no-preference) {
-  a:nth-of-type(2) .logo {
-    animation: logo-spin infinite 20s linear;
-  }
-}
-
-.card {
-  padding: 2em;
-}
-
-.orange {
-  color: orange;
-}
-
-form,
-.heroCommands {
-  display: flex;
-  gap: 20px;
-  justify-content: center;
-  margin: 20px;
-}
-
-form label {
-  display: flex;
-  gap: 20px;
-}
-
-.message {
-  text-align: start;
-}
-
-</style>
