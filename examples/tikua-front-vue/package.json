@@ -9,7 +9,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@doiim/tikua": "^0.4.0",
+    "@doiim/tikua": "^0.4.1",
     "vue": "^3.4.21",
     "vue-json-pretty": "^2.4.0"
   },
