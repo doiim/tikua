@@ -49,6 +49,13 @@ form,
   margin: 20px;
 }
 
+.heroCommands {
+  flex-direction: row;
+}
+p {
+  font-size: smaller;
+}
+
 form label {
   display: flex;
   gap: 20px;

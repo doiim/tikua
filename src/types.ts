@@ -2,12 +2,12 @@ import { gql } from "@urql/core";
 import { Address } from 'viem';
 
 export interface TikuaParams {
+    abi: any
     provider?: any,
-    address?: Address,
-    endpoint?: string,
-    abi?: any
+    appAddress?: Address,
+    appEndpoint?: string,
     waitBlocks?: number,
-    account?: Address,
+    signerAddress?: Address,
 }
 
 export enum chainsByName {
@@ -74,7 +74,7 @@ query GetNotices($cursor: String) {
         }
     }`;
 
-// GraphQL query to retrieve notices given a cursor
+// GraphQL query to retrieve notices given a cursor and an msgSender address
 export const GET_MY_NOTICES_QUERY = gql`
 query GetNotices($cursor: String, $account: String) {
         notices(first: 10, after: $cursor) {

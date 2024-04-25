@@ -34,12 +34,12 @@ import { decodeNotices, getCartesiContractAbi, getCartesiDeploymentAddress } fro
 import { GET_NOTICES_QUERY, TikuaParams } from './types.js';
 
 export class Tikua {
-    private readonly provider: EIP1193Provider;
-    private readonly dappAddress!: Address;
-    private readonly dappEndpoint!: string;
-    private readonly dappABI!: Abi;
+    private readonly provider!: EIP1193Provider;
+    private readonly appAddress!: Address;
+    private readonly appEndpoint!: string;
+    private readonly dappABI: Abi;
     private readonly waitBlocks: number = 1;
-    private readonly account?: string;
+    private readonly signerAddress?: string;
     private timers: number[] = [];
 
     private chain?: Chain;
@@ -47,20 +47,21 @@ export class Tikua {
     /**
      * Constructor for initializing the SDK with the provided parameters.
      *
-     * @param {EIP1193Provider} provider - The provider for the SDK
-     * @param {string} address - (optional) The address for the dapp
-     * @param {string} endpoint - (optional) The endpoint for the dapp
-     * @param {string} abi - (optional) The ABI for the dapp
+     * @param {string} abi -  The ABI for the dapp
+     * @param {EIP1193Provider} provider - (optional) The provider for the SDK used for send Inputs
+     * @param {string} dappAddress - (optional) The address for the dapp used for Inspect and Notices
+     * @param {string} dappEndpoint - (optional) The endpoint for the dapp used for Inspect and Notices
      * @param {number} waitBlocks - (optional) The number of confirmation blocks after send inputs
-     * @param {string} account - (optional) The account for the SDK
+     * @param {string} signerAddress - (optional) The connected account to send the inputs using SDK
      */
-    public constructor({ provider, address, endpoint, abi, waitBlocks, account }: TikuaParams) {
-        this.provider = provider as EIP1193Provider;
-        if (address) this.dappAddress = address;
-        if (endpoint) this.dappEndpoint = endpoint;
+    public constructor({ provider, appAddress, appEndpoint, abi, waitBlocks, signerAddress }: TikuaParams) {
         if (abi) this.dappABI = parseAbi(abi);
+        else throw Error('Application ABI needs to be provided to initialize the Tikua SDK');
+        if (provider) this.provider = provider as EIP1193Provider;
+        if (appAddress) this.appAddress = appAddress;
+        if (appEndpoint) this.appEndpoint = appEndpoint;
         if (waitBlocks) this.waitBlocks = waitBlocks;
-        if (account) this.account = account
+        if (signerAddress) this.signerAddress = signerAddress
     }
 
     /**
@@ -78,7 +79,7 @@ export class Tikua {
      * @return {Address} The address of the dapp.
      */
     public get getAddress(): Address {
-        return this.dappAddress;
+        return this.appAddress;
     }
 
     /**
@@ -89,6 +90,7 @@ export class Tikua {
      * @return {Promise<void>} Promise that resolves when the chain is assigned.
      */
     public assignChain = async () => {
+        if (!this.provider) throw new Error('Provider not defined on Tikua, please pass a valid provider on constructor.');
         const chainId = await this.provider.request({ method: 'eth_chainId' })
         this.chain = extractChain({
             chains: [
@@ -122,7 +124,7 @@ export class Tikua {
             chain: this.chain,
             transport: custom(this.provider)
         })
-        const account = this.account as Address || (await client.getAddresses()).shift()
+        const account = this.signerAddress as Address || (await client.getAddresses()).shift()
         if (!account) throw new Error('Not able to grab an signer account from provider');
 
         const publicClient = createPublicClient({
@@ -147,7 +149,7 @@ export class Tikua {
             address: inputBoxAddress,
             abi: inputBoxAbi,
             functionName: 'addInput',
-            args: [this.dappAddress, data],
+            args: [this.appAddress, data],
             account
         })
 
@@ -164,12 +166,14 @@ export class Tikua {
      * @throws {Error} - If there is no endpoint defined for the instance.
      */
     public fetchInspect = async (fn: string, args: any[]) => {
+        if (!this.appEndpoint) throw new Error('Application endpoint not defined on Tikua, please pass a valid endpoint on constructor.');
+
         const payloadRequest = encodeFunctionData({
             abi: this.dappABI,
             functionName: fn,
             args
         })
-        const response = await fetch(`${this.dappEndpoint}/inspect/${payloadRequest}`);
+        const response = await fetch(`${this.appEndpoint}/inspect/${payloadRequest}`);
         const data = await response.json() as { reports: any[] };
         return decodeFunctionResult({
             abi: this.dappABI,
@@ -188,9 +192,9 @@ export class Tikua {
      * @throws {Error} - If there is no endpoint defined for the instance.
      */
     public addNoticesListener = (pollInterval: number, callback: (result: any) => void) => {
-        if (!this.dappEndpoint) throw new Error('There is no endpoint defined for the instance');
+        if (!this.appEndpoint) throw new Error('Application endpoint not defined on Tikua, please pass a valid endpoint on constructor.');
         const client = new Client({
-            url: `${this.dappEndpoint}/graphql`,
+            url: `${this.appEndpoint}/graphql`,
             requestPolicy: 'cache-and-network',
             exchanges: [
                 cacheExchange,
@@ -217,9 +221,9 @@ export class Tikua {
      * @throws {Error} - If there is no endpoint defined for the instance.
      */
     public addMyNoticesListener = (pollInterval: number, account: Address, callback: (result: any) => void) => {
-        if (!this.dappEndpoint) throw new Error('There is no endpoint defined for the instance');
+        if (!this.appEndpoint) throw new Error('Application endpoint not defined on Tikua, please pass a valid endpoint on constructor.');
         const client = new Client({
-            url: `${this.dappEndpoint}/graphql`,
+            url: `${this.appEndpoint}/graphql`,
             requestPolicy: 'cache-and-network',
             exchanges: [
                 cacheExchange,

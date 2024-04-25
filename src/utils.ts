@@ -12,7 +12,7 @@ export const getCartesiDeploymentAddress = async (chainId: number | Address, con
     const decoded = (typeof chainId === 'number' ? '0x' + chainId.toString(16) : chainId) as ChainName;
     // We replace network foundry with Mainnet cause it is the same addresses
     // @ts-ignore
-    const deploymentAddresses = (await import(`../deployments/${decoded == '0x7a69' ? 'mainnet' : namesByChain[decoded as ChainName]}.json`, {assert: {type:"json"}})).default as { [key: string]: string };
+    const deploymentAddresses = (await import(`../deployments/${decoded == '0x7a69' ? 'mainnet' : namesByChain[decoded as ChainName]}.json`, { assert: { type: "json" } })).default as { [key: string]: string };
     return deploymentAddresses[contract] as Address
 }
 
@@ -25,9 +25,16 @@ export const getCartesiDeploymentAddress = async (chainId: number | Address, con
  */
 export const getCartesiContractAbi = async (contract: ContractName) => {
     // @ts-ignore
-    return (await import(`../abis/${contract}.json`, {assert: {type:"json"}})).default as Abi;
+    return (await import(`../abis/${contract}.json`, { assert: { type: "json" } })).default as Abi;
 }
 
+/**
+ * Decodes the notices object into an array of decoded notices.
+ *
+ * @param {noticesRawObject} notices - The notices object to be decoded.
+ * @param {Abi} abi - The ABI (Application Binary Interface) used for decoding.
+ * @return {NoticeDecoded[]} An array of decoded notices.
+ */
 export const decodeNotices = (notices: NoticesRawObject, abi: Abi) => {
     return notices.edges.map((edge) => {
         return {

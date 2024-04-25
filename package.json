@@ -1,6 +1,6 @@
 {
   "name": "@doiim/tikua",
-  "version": "0.3.3",
+  "version": "0.4.0",
   "author": "doiim",
   "description": "A Isomorphic JS/TS package to use with any framework on Browser or Terminal for Cartesi dapps.",
   "homepage": "https://github.com/doiim/tikua",

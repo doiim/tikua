@@ -6,11 +6,6 @@ import { Tikua, Address } from '@doiim/tikua'
 import ReactJson from '@vahagn13/react-json-view'
 import logo from './assets/logo.png'
 
-// const playersList: Map<Address, number> = new Map()
-// if (!playersList.has('0x0')) playersList.set('0x0', 100)
-// playersList.set('0x0', Math.max(playersList.get('0x0')! - 30, 0))
-// console.log(BigInt(playersList.get('0x0') || 0))
-
 // Add property to allow JSON to be serialized on the frontend
 // @ts-ignore
 BigInt.prototype.toJSON = function () { return this.toString() }
@@ -46,15 +41,24 @@ function App() {
   const [wallets, setWallets] = useState<WalletState[]>([])
   const [dragonId, setDragonId] = useState<number>(0)
   const [message, setMessage] = useState<object>({})
+  const [isDarkMode, setIsDarkMode] = useState<boolean>(false)
 
   useEffect(() => {
     const state = onboard.state.select()
     const { unsubscribe } = state.subscribe((update) => {
       setWallets(update.wallets)
     })
-    // return () => {
-    //   unsubscribe()
-    // }
+    // Add listener to update styles
+    window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', e => setIsDarkMode(e.matches ? true : false));
+
+    // Setup dark/light mode for the first time
+    setIsDarkMode(window.matchMedia('(prefers-color-scheme: dark)').matches ? true : false)
+
+    // Remove listener
+    return () => {
+      // unsubscribe()
+      window.matchMedia('(prefers-color-scheme: dark)').removeEventListener('change', () => { })
+    }
   }, [])
 
   const connectWallet = async () => {
@@ -66,8 +70,8 @@ function App() {
     e.preventDefault()
     const tikua = new Tikua({
       provider: onboard.state.get().wallets[0].provider,
-      address: '0xab7528bb862fB57E8A2BCd567a2e929a0Be56a5e',
-      account: wallets[0].accounts[0].address as Address,
+      appAddress: '0xab7528bb862fB57E8A2BCd567a2e929a0Be56a5e',
+      signerAddress: wallets[0].accounts[0].address as Address,
       abi
     })
     await tikua.sendInput('attackDragon', [dragonId])
@@ -76,8 +80,8 @@ function App() {
   const drinkPotion = async () => {
     const tikua = new Tikua({
       provider: onboard.state.get().wallets[0].provider,
-      address: '0xab7528bb862fB57E8A2BCd567a2e929a0Be56a5e',
-      account: wallets[0].accounts[0].address as Address,
+      appAddress: '0xab7528bb862fB57E8A2BCd567a2e929a0Be56a5e',
+      signerAddress: wallets[0].accounts[0].address as Address,
       abi
     })
     await tikua.sendInput('drinkPotion', [])
@@ -85,8 +89,7 @@ function App() {
 
   const checkLife = async () => {
     const tikua = new Tikua({
-      provider: onboard.state.get().wallets[0].provider,
-      endpoint: 'http://localhost:8080',
+      appEndpoint: 'http://localhost:8080',
       abi
     })
     const status = await tikua.fetchInspect('heroStatus', [wallets[0].accounts[0].address as Address])
@@ -98,9 +101,7 @@ function App() {
   const checkDragon = async (e: any) => {
     e.preventDefault()
     const tikua = new Tikua({
-      provider: onboard.state.get().wallets[0].provider,
-      endpoint: 'http://localhost:8080',
-      address: '0xab7528bb862fB57E8A2BCd567a2e929a0Be56a5e',
+      appEndpoint: 'http://localhost:8080',
       abi: abi
     })
     const status = await tikua.fetchInspect('dragonStatus', [dragonId])
@@ -113,9 +114,7 @@ function App() {
   const dragonsList = async (e: any) => {
     e.preventDefault()
     const tikua = new Tikua({
-      provider: onboard.state.get().wallets[0].provider,
-      endpoint: 'http://localhost:8080',
-      address: '0xab7528bb862fB57E8A2BCd567a2e929a0Be56a5e',
+      appEndpoint: 'http://localhost:8080',
       abi: abi
     })
     const status = await tikua.fetchInspect('dragonsList', []) as any[]
@@ -130,8 +129,7 @@ function App() {
    */
   const startSubscription = async () => {
     const tikua = new Tikua({
-      provider: onboard.state.get().wallets[0].provider,
-      endpoint: 'http://localhost:8080',
+      appEndpoint: 'http://localhost:8080',
       abi: abi
     })
     return tikua.addMyNoticesListener(
@@ -150,32 +148,51 @@ function App() {
         {wallets.length == 0 ?
           <button onClick={connectWallet}>Connect Wallet</button>
           : <p>Wallet: <span className='orange'>{wallets[0].accounts[0].address}</span></p>}
-        <p>
-          After connect your wallet successfully. Fill the form above.
-        </p>
-        <div className='heroCommands'>
-          {wallets.length > 0 ?
-            <button onClick={drinkPotion}>Drink Potion</button> : null
-          }
-          {wallets.length > 0 ?
-            <button onClick={checkLife}>Check Hero Status</button> : null
-          }
-          {wallets.length > 0 ?
-            <button onClick={dragonsList}>List Dragons</button> : null
-          }
-        </div>
-        <form>
-          <label>
-            <span>Dragon Id</span>
-            <input type="number" onChange={(e) => setDragonId(Number(e.target.value))} />
-          </label>
-          {dragonId > 0 ? <input type="submit" value="Dragon Status" onClick={checkDragon} /> : null}
-          {dragonId > 0 ? <input type="submit" value="Attack Dragon" onClick={attackDragon} /> : null}
-        </form>
+        {wallets.length > 0 ? <>
+          <div className='heroCommands'>
+            <div>
+              <button onClick={drinkPotion}>Drink Potion</button>
+              <p>
+                <strong>Drink Potion:</strong> This is a write request that sends an
+                input to the dApp, triggering the advance execution, which will
+                generate notices.
+              </p>
+            </div>
+            <div>
+              <button onClick={checkLife}>Check Hero Status</button>
+              <p>
+                <strong>Check Health:</strong> This is a read-only request that sends
+                an inspect request to the dApp and retrieves a report on the health
+                status.
+              </p>
+            </div>
+          </div>
+          <div className='dragonCommands'>
+            <button onClick={dragonsList}>List Dragons</button>
+            <p>
+              <strong>List All Dragons and Check Health:</strong> This is a
+              read-only request that sends an inspect request to the dApp and
+              retrieves a report with all dragons.
+            </p>
 
-        <div className='message'>
-          <ReactJson theme="monokai" displayDataTypes={false} src={message} style={{ color: 'rgb(253, 151, 31)' }} />
-        </div>
+            <form>
+              <label>
+                <span>Dragon Id</span>
+                <input type="number" onChange={(e) => setDragonId(Number(e.target.value))} />
+              </label>
+              {dragonId >= 0 ? <input type="submit" value="Dragon Status" onClick={checkDragon} /> : null}
+              {dragonId >= 0 ? <input type="submit" value="Attack Dragon" onClick={attackDragon} /> : null}
+            </form>
+            <p>
+              <strong>Attack:</strong> This is a write request that sends an input
+              to the dApp, triggering the advance execution, which will generate
+              notices.
+            </p>
+          </div>
+          <div className='message'>
+            <ReactJson theme={isDarkMode ? "monokai" : "bright:inverted"} displayDataTypes={false} src={message} style={{ color: 'rgb(253, 151, 31)' }} />
+          </div>
+        </> : null}
       </div>
     </>
   )

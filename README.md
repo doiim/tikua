@@ -1,6 +1,6 @@
 <p align="center">
   <a href="https://github.com/doiim/cartesi-sdk" title="Tikua Cartesi SDK">
-    <img src="https://github.com/doiim/cartesi-sdk/assets/13040410/5e55dfe1-1f26-4d3e-b437-a531ac6e73f1" alt="Tikua logo" width="200" />
+    <img src="https://github.com/doiim/tikua/assets/13040410/27ea5743-61f6-4fc5-b9b5-111ce6023fd7" alt="Tikua logo" width="200" />
   </a>
 </p>
 
@@ -16,24 +16,31 @@ npm install -s @doiim/tikua
 
 ## Usage
 
+You can jump directly to our [Examples](https://github.com/doiim/tikua/tree/master/examples) folder and check how to implement Tikua on multiple platforms or check here the description of Tikua Class and its functions.
+
 ### CartesiSDK
 
 The `Tikua` class is the main entry point for this SDK. It is instantiated with the following parameters:
 
-- `dappAddress`: The address of your dapp.
-- `dappEndpoint`: The endpoint of your dapp.
-- `provider`: The EIP1193 provider to use.
 - `abi`: The ABI of your dapp. [Human Readable ABI definition](https://abitype.dev/api/human)
+- `provider (optional)`: The EIP1193 provider to use. Needed for Input calls.
+- `appAddress (optional)`: The address of your application deployed. Needed for Input calls.
+- `appEndpoint (optional)`: The endpoint of your dapp. Needed for Inspect and Notices
 
 - `waitBlocks`: The amount of blocks to wait before considering an input sent. Defaults to 1.
-- `account`: The account to sign transactions. Defaults to the first account returned from `getAddresses()` on the provider.
+- `signerAddress (optional)`: The account to sign transactions. Defaults to the first account returned from `getAddresses()` on the provider.
 
 ```ts
-const abi = parseAbi([
+const abi = [
   "function attackDragon(uint256 dragonId, string weapon)",
   "function dragonStatus(uint256 dragonId) returns (uint256)",
-]);
-const tikua = new Tikua("0x0123123", "https://host.backend/", provider, abi);
+];
+const tikua = new Tikua({
+  appAddress: "0x0123123",
+  appEndpoint: "https://host.backend/",
+  provider,
+  abi,
+});
 ```
 
 #### `sendInput(fn: string, args: any[])`
@@ -92,14 +99,28 @@ const unsubscribe = await tikua.addNoticesListener(1000, myWallet, (result) => {
 });
 ```
 
+## Backend
+
+For the backend we use a framework call [Deroll](https://github.com/tuler/deroll). It uses a Typescript backend structure centralized in an ABI protocol same way Tikua. You can start from an example implementation on our [Examples](https://github.com/doiim/tikua/tree/master/examples) folder. There you will find a project using Deroll framework to talk with a frontend using Tikua. Deroll uses ABI for encode and decode function calls/responses, accelerating your development in multiple aspects. Both Deroll and Tikua are based on [Viem](https://viem.sh/) library for encode and decode ABI calls.
+
 ## References
 
 [Human Readable ABI definition](https://abitype.dev/api/human)
+[Viem library](https://viem.sh/)
+[Deroll](https://github.com/tuler/deroll)
 
 ## For Maintainers
 
 To deploy a new version use:
 
 ```sh
-npm run deploy
+npm run build
+npm publish
+```
+
+To deploy a local version for tests use:
+
+```sh
+npm run build
+npm pack
 ```

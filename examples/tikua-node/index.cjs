@@ -24,9 +24,9 @@ const client = createWalletClient({
 })
 
 const tikua = new Tikua({
-    endpoint: 'http://localhost:8080',
+    appEndpoint: 'http://localhost:8080',
+    appAddress: '0xab7528bb862fB57E8A2BCd567a2e929a0Be56a5e',
     provider: client,
-    address: '0xab7528bb862fB57E8A2BCd567a2e929a0Be56a5e',
     abi: abi
 })
 
