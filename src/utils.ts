@@ -11,7 +11,8 @@ import { ChainName, ContractName, NoticeDecoded, NoticesRawObject, namesByChain 
 export const getCartesiDeploymentAddress = async (chainId: number | Address, contract: ContractName) => {
     const decoded = (typeof chainId === 'number' ? '0x' + chainId.toString(16) : chainId) as ChainName;
     // We replace network foundry with Mainnet cause it is the same addresses
-    const deploymentAddresses = (await import(`../deployments/${decoded == '0x7a69' ? 'mainnet' : namesByChain[decoded as ChainName]}.json`)).default as { [key: string]: string };
+    // @ts-ignore
+    const deploymentAddresses = (await import(`../deployments/${decoded == '0x7a69' ? 'mainnet' : namesByChain[decoded as ChainName]}.json`, {assert: {type:"json"}})).default as { [key: string]: string };
     return deploymentAddresses[contract] as Address
 }
 
@@ -23,7 +24,8 @@ export const getCartesiDeploymentAddress = async (chainId: number | Address, con
  * @return {any[]} The ABI of the specified Cartesi contract.
  */
 export const getCartesiContractAbi = async (contract: ContractName) => {
-    return (await import(`../abis/${contract}.json`)).default as Abi;
+    // @ts-ignore
+    return (await import(`../abis/${contract}.json`, {assert: {type:"json"}})).default as Abi;
 }
 
 export const decodeNotices = (notices: NoticesRawObject, abi: Abi) => {
