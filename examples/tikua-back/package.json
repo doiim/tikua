@@ -20,14 +20,12 @@
     "eslint": "^8.56.0",
     "prettier": "^3.2.5",
     "ts-node": "^10.9.2",
-    "typescript": "^5.3.3",
-    "vitest": "^1.2.2"
+    "typescript": "^5.3.3"
   },
   "scripts": {
     "build": "esbuild ./src/index.ts --bundle --outfile=dist/index.js --platform=node --target=node20",
     "clean": "rm -rf node_modules && rm -rf dist",
     "dev": "ROLLUP_HTTP_SERVER_URL=\"http://127.0.0.1:8080/host-runner\" ts-node src/index.ts",
-    "lint": "eslint",
-    "test": "vitest"
+    "lint": "eslint"
   }
 }
