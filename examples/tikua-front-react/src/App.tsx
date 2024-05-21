@@ -20,7 +20,7 @@ const onboard = Onboard({
     {
       id: '0x7A69',
       token: 'ETH',
-      label: 'Local Sunodo',
+      label: 'Local Cartesi',
       rpcUrl: 'http://localhost:8545'
     }
   ]
