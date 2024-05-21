@@ -27,7 +27,7 @@
   },
   "license": "Apache-2.0",
   "devDependencies": {
-    "@cartesi/rollups": "latest",
+    "@cartesi/rollups": "^2.0.0-rc.3",
     "@types/node": "^20.11.27",
     "typescript": "^5.4.2"
   },
