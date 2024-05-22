@@ -1,7 +1,5 @@
 import { useEffect, useState } from 'react'
 import './App.css'
-import Onboard, { WalletState } from '@web3-onboard/core'
-import injectedModule from '@web3-onboard/injected-wallets'
 import { Tikua, Address } from '@doiim/tikua'
 import ReactJson from '@vahagn13/react-json-view'
 import logo from './assets/logo.png'
@@ -9,22 +7,6 @@ import logo from './assets/logo.png'
 // Add property to allow JSON to be serialized on the frontend
 // @ts-ignore
 BigInt.prototype.toJSON = function () { return this.toString() }
-
-// Web3Onboard module for injected wallets
-const injected = injectedModule()
-
-// Instantiating Web3Onboard
-const onboard = Onboard({
-  wallets: [injected],
-  chains: [
-    {
-      id: '0x7A69',
-      token: 'ETH',
-      label: 'Local Cartesi',
-      rpcUrl: 'http://localhost:8545'
-    }
-  ]
-})
 
 // Defining Dapp ABI
 const abi = [
@@ -38,16 +20,13 @@ const abi = [
 
 function App() {
 
-  const [wallets, setWallets] = useState<WalletState[]>([])
+  const [wallet, setWallet] = useState<Address>()
+  const [provider, setProvider] = useState<any>()
   const [dragonId, setDragonId] = useState<number>(0)
   const [message, setMessage] = useState<object>({})
   const [isDarkMode, setIsDarkMode] = useState<boolean>(false)
 
   useEffect(() => {
-    const state = onboard.state.select()
-    const { unsubscribe } = state.subscribe((update) => {
-      setWallets(update.wallets)
-    })
     // Add listener to update styles
     window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', e => setIsDarkMode(e.matches ? true : false));
 
@@ -59,19 +38,39 @@ function App() {
       // unsubscribe()
       window.matchMedia('(prefers-color-scheme: dark)').removeEventListener('change', () => { })
     }
+    connectWallet()
   }, [])
 
   const connectWallet = async () => {
-    setWallets(await onboard.connectWallet())
-    startSubscription();
+    if (!window.ethereum) throw Error("MetaMask not found");
+    await window.ethereum.request({
+      method: "wallet_addEthereumChain",
+      params: [
+        {
+          chainId: "0x7A69",
+          chainName: "Local Anvil",
+          nativeCurrency: { name: "Ether", symbol: "ETH", decimals: 18 },
+          rpcUrls: ["http://localhost:8545"],
+        },
+      ],
+    });
+    const [account] = await window.ethereum.request({
+      method: "eth_requestAccounts",
+    });
+    if (!account) throw Error("MetaMask reject");
+
+    setWallet(account);
+    setProvider(window.ethereum);
+
+    await startSubscription(account);
   }
 
   const attackDragon = async (e: any) => {
     e.preventDefault()
     const tikua = new Tikua({
-      provider: onboard.state.get().wallets[0].provider,
+      provider,
       appAddress: '0xab7528bb862fB57E8A2BCd567a2e929a0Be56a5e',
-      signerAddress: wallets[0].accounts[0].address as Address,
+      signerAddress: wallet,
       abi
     })
     await tikua.sendInput('attackDragon', [dragonId])
@@ -79,9 +78,9 @@ function App() {
 
   const drinkPotion = async () => {
     const tikua = new Tikua({
-      provider: onboard.state.get().wallets[0].provider,
+      provider: provider,
       appAddress: '0xab7528bb862fB57E8A2BCd567a2e929a0Be56a5e',
-      signerAddress: wallets[0].accounts[0].address as Address,
+      signerAddress: wallet,
       abi
     })
     await tikua.sendInput('drinkPotion', [])
@@ -92,7 +91,7 @@ function App() {
       appEndpoint: 'http://localhost:8080',
       abi
     })
-    const status = await tikua.fetchInspect('heroStatus', [wallets[0].accounts[0].address as Address])
+    const status = await tikua.fetchInspect('heroStatus', [wallet])
     setMessage({
       life: status
     })
@@ -127,14 +126,14 @@ function App() {
    *
    * @return {Promise<void>} Returns a Promise that resolves when the notices listener is added.
    */
-  const startSubscription = async () => {
+  const startSubscription = async (account: Address) => {
     const tikua = new Tikua({
       appEndpoint: 'http://localhost:8080',
       abi: abi
     })
     return tikua.addMyNoticesListener(
       1000,
-      onboard.state.get().wallets[0].accounts[0].address as Address,
+      account,
       (e) => setMessage(e)
     )
   }
@@ -145,10 +144,10 @@ function App() {
       <h1>Tikua</h1>
       <p>an isomorphic Cartesi SDK</p>
       <div className="card">
-        {wallets.length == 0 ?
+        {!wallet ?
           <button onClick={connectWallet}>Connect Wallet</button>
-          : <p>Wallet: <span className='orange'>{wallets[0].accounts[0].address}</span></p>}
-        {wallets.length > 0 ? <>
+          : <p>Wallet: <span className='orange'>{wallet}</span></p>}
+        {wallet ? <>
           <div className='heroCommands'>
             <div>
               <button onClick={drinkPotion}>Drink Potion</button>
