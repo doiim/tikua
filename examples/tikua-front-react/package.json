@@ -11,10 +11,7 @@
   },
   "dependencies": {
     "@doiim/tikua": "^0.4.0",
-    "@urql/core": "^5.0.0",
     "@vahagn13/react-json-view": "^1.0.15",
-    "@web3-onboard/core": "^2.21.6",
-    "@web3-onboard/injected-wallets": "^2.10.13",
     "react": "^18.2.0",
     "react-dom": "^18.2.0"
   },
