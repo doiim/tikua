@@ -18,7 +18,7 @@ npm install -s @doiim/tikua
 
 You can jump directly to our [Examples](https://github.com/doiim/tikua/tree/master/examples) folder and check how to implement Tikua on multiple platforms or check here the description of Tikua Class and its functions.
 
-### CartesiSDK
+### Tikua SDK
 
 The `Tikua` class is the main entry point for this SDK. It is instantiated with the following parameters:
 
@@ -97,6 +97,71 @@ const myWallet = "0x0123123123123";
 const unsubscribe = await tikua.addNoticesListener(1000, myWallet, (result) => {
   console.log(result);
 });
+```
+
+#### `depositSingleERC1155`
+
+Deposits a single ERC1155 token into the ERC1155 Single Portal. This function prepares and simulates a transaction to deposit a specified amount of a single ERC1155 token. It is designed to interact with the Cartesi infrastructure on a specified blockchain network.
+
+- `token: Address` - The contract address of the ERC1155 token.
+- `tokenId: bigint` - The unique identifier (ID) of the ERC1155 token to deposit.
+- `amount: bigint` - The quantity of the specified ERC1155 token to deposit.
+- `baseLayerData: string` - (Optional) Additional data for the base layer of the deposit transaction. Defaults to an empty string.
+- `execLayerData: string` - (Optional) Execution layer data for the deposit transaction. Defaults to an empty string.
+
+Returns `Promise<string>` - A promise that resolves to the transaction hash of the simulated deposit transaction.
+
+```ts
+const tokenAddress = "0x...";
+const tokenId = BigInt(1);
+const amount = BigInt(100);
+const baseLayerData = "";
+const execLayerData = "";
+
+tikuaInstance
+  .depositSingleERC1155(
+    tokenAddress,
+    tokenId,
+    amount,
+    baseLayerData,
+    execLayerData
+  )
+  .then((txHash) => console.log("Transaction Hash:", txHash))
+  .catch((error) => console.error("Error depositing ERC1155 token:", error));
+```
+
+#### `depositBatchERC1155`
+
+Deposits a batch of ERC1155 tokens into the ERC1155 Batch Portal on a specified blockchain network. This function is designed to handle multiple tokens and their respective amounts in a single transaction, streamlining the deposit process for users.
+
+### Parameters
+
+- `token: Address` - The smart contract address of the ERC1155 token.
+- `tokenIds: bigint[]` - An array of token IDs. Each ID corresponds to a specific token type within the ERC1155 contract.
+- `amounts: bigint[]` - An array of amounts. Each amount corresponds to the quantity of the token type specified by the `tokenIds` array to be deposited. The order of amounts must match the order of `tokenIds`.
+- `baseLayerData: string` (Optional) - Additional data that may be required by the base layer of the blockchain. This parameter is optional and can be left empty if not needed.
+- `execLayerData: string` (Optional) - Execution layer data that may be required for the deposit transaction. This parameter is optional and can be left empty if not needed.
+
+Returns `Promise<string>` - A promise that resolves to the transaction hash of the deposit operation. This hash can be used to track the transaction on the blockchain.
+
+```ts
+const tokenAddress = "0xYourTokenAddressHere";
+const tokenIds = [1n, 2n, 3n];
+const amounts = [100n, 200n, 300n];
+const baseLayerData = "";
+const execLayerData = "";
+
+depositBatchERC1155(
+  tokenAddress,
+  tokenIds,
+  amounts,
+  baseLayerData,
+  execLayerData
+)
+  .then((txHash) => console.log(`Transaction hash: ${txHash}`))
+  .catch((error) =>
+    console.error(`Error depositing ERC1155 tokens: ${error.message}`)
+  );
 ```
 
 ## Backend

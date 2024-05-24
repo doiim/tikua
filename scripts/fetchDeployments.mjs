@@ -6,6 +6,7 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 const deploymentsPath = path.join(__dirname, '..', 'node_modules', '@cartesi', 'rollups', 'deployments');
+const applicationPath = path.join(__dirname, '..', 'node_modules', '@cartesi', 'rollups', 'export', 'artifacts', 'contracts', 'dapp', 'CartesiDApp.sol');
 const deploymentsDestPath = path.join(__dirname, '..', 'src', 'deployments');
 const abisDestPath = path.join(__dirname, '..', 'src', 'abis');
 
@@ -59,5 +60,12 @@ fs.readdir(deploymentsPath, (err, folders) => {
             fs.writeFileSync(jsonDestDeployments, JSON.stringify(addresses, null, 2), 'utf8');
         });
     });
+
+    const file = 'CartesiDApp.json'
+    const filePath = path.join(applicationPath, file);
+    const f = fs.readFileSync(filePath, 'utf8')
+    const abi = JSON.parse(f).abi
+    const destPath = path.join(abisDestPath, file);
+    fs.writeFileSync(destPath, JSON.stringify(abi, null, 2), 'utf8');
 });
 

@@ -1,5 +1,5 @@
 import { Address, Abi, decodeFunctionData } from 'viem'
-import { ChainName, ContractName, NoticeDecoded, NoticesRawObject, namesByChain } from './types.js';
+import { ChainName, ContractName, NoticeDecoded, NoticesRawObject, VoucherDecoded, VouchersRawObject, namesByChain } from './types.js';
 
 /**
  * Retrieves the deployment address for a given contract on a specified chain.
@@ -44,4 +44,33 @@ export const decodeNotices = (notices: NoticesRawObject, abi: Abi) => {
             payload: decodeFunctionData({ abi, data: edge.node.payload as `0x${string}` })
         }
     }) as NoticeDecoded[]
+}
+
+/**
+ * Decodes the notices object into an array of decoded notices.
+ *
+ * @param {VouchersRawObject} notices - The notices object to be decoded.
+ * @param {Abi} abi - The ABI (Application Binary Interface) used for decoding.
+ * @return {NoticeDecoded[]} An array of decoded notices.
+ */
+export const decodeVouchers = (vouchers: VouchersRawObject, abi: Abi) => {
+    return vouchers.edges.map((edge) => {
+        const { functionName, args } = decodeFunctionData({ data: edge.node.payload as `0x${string}`, abi })
+        const object = {
+            index: edge.node.input.index,
+            msgSender: edge.node.input.msgSender,
+            timestamp: new Date(Number(edge.node.input.timestamp) * 1000),
+            payload: edge.node.payload,
+            input: {
+                index: edge.node.input.index,
+                msgSender: edge.node.input.msgSender,
+                timestamp: new Date(Number(edge.node.input.timestamp) * 1000)
+            },
+            destination: edge.node.destination,
+            proof: edge.node.proof,
+            decodedPayloadFunction: functionName,
+            decodedPayloadArgs: args
+        }
+        return object
+    }) as VoucherDecoded[]
 }
