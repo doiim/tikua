@@ -7,7 +7,7 @@
     "run": "node index"
   },
   "dependencies": {
-    "@doiim/tikua": "^0.4.1",
+    "@doiim/tikua": "^0.7.0",
     "viem": "^2.9.25"
   }
 }

@@ -1,5 +1,5 @@
 import { createApp } from "@deroll/app";
-import { decodeFunctionData, parseAbi, Address, encodeErrorResult, encodeEventTopics, encodeFunctionResult, toHex, fromHex, hexToBytes, bytesToString, hexToString, encodeFunctionData } from "viem";
+import { decodeFunctionData, parseAbi, encodeFunctionData } from "viem";
 
 // create application
 const app = createApp({
@@ -33,21 +33,5 @@ app.addAdvanceHandler(async ({ payload, metadata }) => {
   }
   return "reject";
 });
-
-// app.addInspectHandler(async ({ payload }) => {
-//   const { functionName, args } = decodeFunctionData({ abi: counterAbi, data: hexToString(payload) as `0x${string}` });
-
-//   switch (functionName) {
-//     case "currentCounter":
-//       const [player] = args;
-//       const heroLife = encodeFunctionResult({
-//         abi,
-//         functionName: "heroStatus",
-//         result: BigInt(playersList.get(player.toLowerCase() as Address) || 0)
-//       })
-//       app.createReport({ payload: heroLife })
-//       return;
-//   }
-// })
 
 app.start().catch(() => process.exit(1));

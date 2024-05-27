@@ -9,8 +9,14 @@ export {
     ContractName,
     ChainName,
     TikuaParams,
+    Proof,
+    NoticesRawObject,
+    NoticeDecoded,
+    VouchersRawObject,
+    VoucherDecoded
 } from './types.js'
 export {
     parseAbi,
-    Address
+    Address,
+    getAddress
 } from 'viem'

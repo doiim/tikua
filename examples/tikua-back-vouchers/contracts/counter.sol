@@ -6,6 +6,8 @@ contract Counter {
   uint256 public count;
   address public dapp;
 
+  // The contractor receive the DAPP contract parameter.
+  // It serves as a guarantee that only your Cartesi Machine will be able to increase the count
   constructor(address _dapp){
     dapp = _dapp;
   }

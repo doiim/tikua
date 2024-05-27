@@ -2,7 +2,6 @@
   "name": "tikua-example-back",
   "version": "0.1.0",
   "private": true,
-  "type": "module",
   "description": "Deroll application template",
   "main": "src/index.ts",
   "repository": "git@github.com:tuler/deroll-template.git",
@@ -12,7 +11,6 @@
     "@deroll/app": "^0.5.0",
     "@deroll/router": "^0.3.0",
     "@deroll/wallet": "^0.4.0",
-    "@doiim/tikua": "file:../../doiim-tikua-0.7.0.tgz",
     "abitype": "^1.0.0",
     "viem": "^2.7.9"
   },

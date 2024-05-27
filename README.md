@@ -82,6 +82,108 @@ const unsubscribe = await tikua.addNoticesListener(1000, (result) => {
 });
 ```
 
+#### `executeVoucher(voucher: VoucherDecoded)`
+
+Executes a voucher on the Cartesi DApp, simulating the transaction and then writing it to the blockchain if successful. This function is crucial for processing vouchers, which are essentially tasks or commands that have been issued to the DApp.
+
+voucher: VoucherDecoded: The voucher object to be executed. It must include the destination address, the payload data, and the proof of validity.
+
+Returns a promise that resolves to the transaction hash of the executed voucher transaction.
+
+```ts
+const voucher = {
+  destination: "0x...",
+  payload: "...",
+  proof: "...",
+};
+const txHash = await tikua.executeVoucher(voucher);
+console.log(txHash);
+```
+
+#### `checkVoucher(voucher: VoucherDecoded): Promise<boolean>`
+
+Checks if a voucher has been executed on the Cartesi DApp. It requires the voucher to have a proof to verify its execution status.
+
+- `voucher: VoucherDecoded`: The voucher object to check, which must include a proof of execution.
+
+Returns a promise that resolves to a boolean indicating whether the voucher has been executed.
+
+#### `fetchVoucherFromInput(inputIndex: number, voucherIndex: number): Promise<Voucher[]>`
+
+Fetches a voucher from a specific input index and voucher index within the Cartesi DApp.
+
+- `inputIndex: number`: The index of the input from which to fetch the voucher.
+- `voucherIndex: number`: The index of the voucher within the specified input.
+
+Returns a promise that resolves to an array of vouchers fetched from the specified input index.
+
+#### `addVouchersListener(pollInterval: number, callback: (result: any) => void): Function`
+
+Adds a listener for vouchers, polling for new vouchers at a specified interval and executing a callback function for each new voucher.
+
+- `pollInterval: number`: The interval, in milliseconds, at which to poll for new vouchers.
+- `callback: (result: any) => void`: The callback function to execute for each voucher fetched.
+
+Returns a function that can be called to stop listening for vouchers.
+
+#### `addMyVouchersListener(pollInterval: number, account: Address, callback: (result: any) => void): Function`
+
+Adds a listener for vouchers associated with a specific account, polling for new vouchers at a specified interval and executing a callback function for each new voucher.
+
+- `pollInterval: number`: The interval, in milliseconds, at which to poll for new vouchers.
+- `account: Address`: The account address to filter the vouchers by.
+- `callback: (result: any) => void`: The callback function to execute for each voucher fetched.
+
+Returns a function that can be called to stop listening for vouchers.
+
+#### `depositEther(amount: bigint, execLayerData: string): Promise<string>`
+
+Deposits Ether on the Ether Portal, simulating the deposit transaction and returning the transaction hash.
+
+- `amount: bigint`: The amount of Ether to deposit.
+- `execLayerData: string`: The execution layer data for the deposit.
+
+Returns a promise that resolves to the transaction hash of the simulated deposit transaction.
+
+#### `approveERC20(token: Address, amount: bigint): Promise<string>`
+
+Approves ERC20 tokens for deposit on the ERC20 Portal, simulating the approval transaction and returning the transaction hash.
+
+- `token: Address`: The address of the ERC20 token to approve.
+- `amount: bigint`: The amount of ERC20 tokens to approve.
+
+Returns a promise that resolves to the transaction hash of the simulated approval transaction.
+
+#### `depositERC20(token: Address, amount: bigint, execLayerData: string): Promise<string>`
+
+Deposits ERC20 tokens on the ERC20 Portal, simulating the deposit transaction and returning the transaction hash.
+
+- `token: Address`: The address of the ERC20 token to deposit.
+- `amount: bigint`: The amount of ERC20 tokens to deposit.
+- `execLayerData: string`: Optional execution layer data for the deposit.
+
+Returns a promise that resolves to the transaction hash of the simulated deposit transaction.
+
+#### `approveERC721(token: Address, tokenId: bigint): Promise<string>`
+
+Approves an ERC721 token for deposit on the ERC721 Portal, simulating the approval transaction and returning the transaction hash.
+
+- `token: Address`: The address of the ERC721 token.
+- `tokenId: bigint`: The ID of the ERC721 token to approve.
+
+Returns a promise that resolves to the transaction hash of the simulated approval transaction.
+
+#### `depositERC721(token: Address, tokenId: bigint, baseLayerData: string, execLayerData: string): Promise<string>`
+
+Deposits an ERC721 token on the ERC721 Portal, simulating the deposit transaction and returning the transaction hash.
+
+- `token: Address`: The address of the ERC721 token to deposit.
+- `tokenId: bigint`: The ID of the ERC721 token to deposit.
+- `baseLayerData: string`: Optional base layer data for the deposit.
+- `execLayerData: string`: Optional execution layer data for the deposit.
+
+Returns q promise that resolves to the transaction hash of the simulated deposit transaction.
+
 #### `addMyNoticesListener(pollInterval : number, account:Address,  fn: (report: any) => void)`
 
 Listen for all notices triggered related to your address. This is similar to `addNoticesListener`, but it uses your configured address to filter the results.
@@ -97,6 +199,34 @@ const myWallet = "0x0123123123123";
 const unsubscribe = await tikua.addNoticesListener(1000, myWallet, (result) => {
   console.log(result);
 });
+```
+
+#### `approveSingleERC1155(token: Address, approve: boolean = true)`
+
+This function is used to set approval for the ERC1155 Single Portal contract to transfer your tokens.
+
+- `token: Address`: The address of the ERC1155 token.
+  approve: boolean: Whether to set approval or revoke approval. Default is true (approve).
+
+Returns the transaction hash of the simulated transaction.
+
+```ts
+const tokenAddress = "0x1234567890";
+const txHash = await tikua.approveSingleERC1155(tokenAddress, true);
+```
+
+#### `approveBatchERC1155(token: Address, approve: boolean = true)`
+
+This function is used to approve ERC1155 tokens to be sent to the ERC1155 Batch Portal. It approves the portal to spend all tokens of this type.
+
+- `token: Address`: Address: The address of the ERC1155 token.
+  approve: boolean: Whether to set approval or revoke approval. Default is true (approve).
+
+Returns the transaction hash of the simulated approval transaction.
+
+```ts
+const tokenAddress = "0x1234567890";
+const txHash = await tikua.approveBatchERC1155(tokenAddress, true);
 ```
 
 #### `depositSingleERC1155`
@@ -134,8 +264,6 @@ tikuaInstance
 
 Deposits a batch of ERC1155 tokens into the ERC1155 Batch Portal on a specified blockchain network. This function is designed to handle multiple tokens and their respective amounts in a single transaction, streamlining the deposit process for users.
 
-### Parameters
-
 - `token: Address` - The smart contract address of the ERC1155 token.
 - `tokenIds: bigint[]` - An array of token IDs. Each ID corresponds to a specific token type within the ERC1155 contract.
 - `amounts: bigint[]` - An array of amounts. Each amount corresponds to the quantity of the token type specified by the `tokenIds` array to be deposited. The order of amounts must match the order of `tokenIds`.
@@ -163,6 +291,26 @@ depositBatchERC1155(
     console.error(`Error depositing ERC1155 tokens: ${error.message}`)
   );
 ```
+
+### Utility Static Functions
+
+#### `getCartesiDeploymentAddress`
+
+Retrieves the deployment address for a given contract on a specified chain.
+
+- `chainId` (number | AddressLike): The ID of the chain or the address of the chain.
+- `contract` (ContractName): The name of the contract to retrieve the deployment address for.
+
+Returns the deployment address of the specified contract.
+
+#### `getCartesiContractAbi`
+
+Retrieves the ABI (Application Binary Interface) of a Cartesi contract based on the provided contract name.
+
+- `chainId` (number | Address): The ID or address of the chain to retrieve the contract ABI from.
+- `contract` (ContractName): The name of the contract to retrieve the ABI for.
+
+Returns the ABI of the specified Cartesi contract.
 
 ## Backend
 

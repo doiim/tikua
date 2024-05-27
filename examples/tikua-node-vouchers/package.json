@@ -1,0 +1,14 @@
+{
+  "name": "tikua-example-vouchers",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Tikua Node example for request and release vouchers.",
+  "main": "src/index.ts",
+  "author": "Filipe Soccol <filipe@doiim.com>",
+  "license": "MIT",
+  "dependencies": {
+    "@doiim/tikua": "@doiim/tikua@0.7.0",
+    "viem": "^2.7.9"
+  }
+}

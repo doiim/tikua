@@ -95,6 +95,13 @@ export class Tikua {
         return this.appAddress;
     }
 
+    /**
+     * Prepares the sender by initializing the necessary clients and retrieving the signer account.
+     * @returns A promise that resolves to an object containing the initialized public client, the account address,
+     * the wallet client, and the chain information.
+     * @throws {Error} If the chain is not assigned, the application address is not provided, or no signer account
+     * could be determined.
+     */
     private async prepareSender(): Promise<{
         publicClient: PublicClient,
         account: Address,
@@ -124,13 +131,27 @@ export class Tikua {
     }
 
     /**
+     * Prepares and returns a GraphQL client configured for interacting with the dapp's GraphQL API.
+     * @throws {Error} Throws an error if the application endpoint is not defined in the Tikua instance.
+     * @returns {Client} A configured instance of the GraphQL `Client` ready for querying the dapp's GraphQL API.
+     */
+    private prepareGraphQLClient(): Client {
+        if (!this.appEndpoint) throw new Error('Application endpoint not defined on Tikua, please pass a valid endpoint on constructor.');
+        return new Client({
+            url: `${this.appEndpoint}/graphql`,
+            requestPolicy: 'cache-and-network',
+            exchanges: [
+                cacheExchange,
+                fetchExchange,
+            ],
+        })
+    }
+
+    /**
      * Assigns the chain based on the provider.
-     *
-     * This function is async and should be awaited.
-     *
      * @return {Promise<void>} Promise that resolves when the chain is assigned.
      */
-    public assignChain = async () => {
+    private assignChain = async () => {
         if (!this.provider) throw new Error('Provider not defined on Tikua, please pass a valid provider on constructor.');
         const chainId = await this.provider.request({ method: 'eth_chainId' })
         this.chain = extractChain({
@@ -222,40 +243,33 @@ export class Tikua {
      * @param {any} filter - The filter to apply to the query.
      **/
     private addListenerNotices = (query: TypedDocumentNode<any, AnyVariables>, filter: any, pollInterval: number, callback: (result: any) => void) => {
-        if (!this.appEndpoint) throw new Error('Application endpoint not defined on Tikua, please pass a valid endpoint on constructor.');
-        const client = new Client({
-            url: `${this.appEndpoint}/graphql`,
-            requestPolicy: 'cache-and-network',
-            exchanges: [
-                cacheExchange,
-                fetchExchange,
-            ],
-        })
+        const client = this.prepareGraphQLClient();
         let cursor: string
         const timeout = setInterval(async () => {
             const result = await client.query(query, { cursor, ...filter }).toPromise()
             if (!result.data.notices.pageInfo.hasNextPage && !result.data.notices.pageInfo.endCursor) return
             cursor = result.data.notices.pageInfo.endCursor;
-            if (result.data.notices.length > 0)
+            if (result.data.notices.edges.length > 0)
                 callback(decodeNotices(result.data.notices, this.dappABI));
         }, pollInterval)
         return () => clearInterval(timeout)
     }
 
+    /**
+     * Fetches a notice from the GraphQL API based on the provided query and filter.
+     *
+     * @param query - The GraphQL query to fetch notices.
+     * @param filter - The filter to apply when fetching notices.
+     * @returns {Promise<Notice[]>} - A promise that resolves to an array of notices fetched from the GraphQL API.
+     * @throws {Error} - If the application endpoint is not defined on Tikua, throws an error.
+     * @throws {Error} - If the GraphQL query or filter are invalid, throws an error.
+     */
     private fetchNotice = async (query: TypedDocumentNode<any, AnyVariables>, filter: any) => {
-        if (!this.appEndpoint) throw new Error('Application endpoint not defined on Tikua, please pass a valid endpoint on constructor.');
-        const client = new Client({
-            url: `${this.appEndpoint}/graphql`,
-            requestPolicy: 'cache-and-network',
-            exchanges: [
-                cacheExchange,
-                fetchExchange,
-            ],
-        })
+        const client = this.prepareGraphQLClient();
         const result = await client.query(query, filter).toPromise()
         if (!result.data) throw new Error('Could not fetch notice from filter passed.');
         return decodeNotices({
-            totalCount: 0,
+            totalCount: 1,
             pageInfo: {
                 hasNextPage: false,
                 endCursor: ''
@@ -265,32 +279,22 @@ export class Tikua {
     }
 
     /**
-     * Adds a listener for vouchers and calls the provided callback with the result.
-     * The listener keeps polling the dapp endpoint every `pollInterval` milliseconds
-     * until it unsubscribes. The callback is called with the decoded notices.
-     *
-     * @param {TypedDocumentNode} query - The GraphQL query to subscribe to.
-     * @param {any} filter - The filter to apply to the query.
-     * @param {any} filter - The filter to apply to the query.
-     * @param {any} filter - The filter to apply to the query.
-     **/
+     * Adds a listener for vouchers. Fetches vouchers from the GraphQL API and calls the provided callback function for each voucher.
+     * @param query - The GraphQL query to fetch vouchers.
+     * @param filter - The filter to apply when fetching vouchers.
+     * @param pollInterval - The interval at which to poll for new vouchers.
+     * @param callback - The callback function to be called for each voucher fetched.
+     * @returns {Function} - A function that can be called to stop listening for vouchers.
+     */
     private addListenerVouchers = (query: TypedDocumentNode<any, AnyVariables>, filter: any, pollInterval: number, callback: (result: VoucherDecoded[]) => void) => {
-        if (!this.appEndpoint) throw new Error('Application endpoint not defined on Tikua, please pass a valid endpoint on constructor.');
-        const client = new Client({
-            url: `${this.appEndpoint}/graphql`,
-            requestPolicy: 'cache-and-network',
-            exchanges: [
-                cacheExchange,
-                fetchExchange,
-            ],
-        })
+        const client = this.prepareGraphQLClient();
         let cursor: string
         const timeout = setInterval(async () => {
             const result = await client.query(query, { cursor, ...filter }).toPromise()
             if (!result.data.vouchers.pageInfo.hasNextPage && !result.data.vouchers.pageInfo.endCursor) return
             cursor = result.data.vouchers.pageInfo.endCursor;
             // Call the callback
-            if (result.data.vouchers.length > 0)
+            if (result.data.vouchers.edges.length > 0)
                 callback(decodeVouchers(result.data.vouchers, this.dappABI));
         }, pollInterval)
         return () => clearInterval(timeout)
@@ -298,26 +302,17 @@ export class Tikua {
 
     /**
      * Fetches a voucher from the GraphQL API based on the provided query and filter.
-     *
      * @param query - The GraphQL query to fetch vouchers.
      * @param filter - The filter to apply when fetching vouchers.
      * @returns {Promise<Voucher[]>} - A promise that resolves to an array of vouchers fetched from the GraphQL API.
      * @throws {Error} - If the application endpoint is not defined on Tikua, throws an error.
      */
     private fetchVoucher = async (query: TypedDocumentNode<any, AnyVariables>, filter: any) => {
-        if (!this.appEndpoint) throw new Error('Application endpoint not defined on Tikua, please pass a valid endpoint on constructor.');
-        const client = new Client({
-            url: `${this.appEndpoint}/graphql`,
-            requestPolicy: 'cache-and-network',
-            exchanges: [
-                cacheExchange,
-                fetchExchange,
-            ],
-        })
+        const client = this.prepareGraphQLClient();
         const result = await client.query(query, filter).toPromise()
         if (!result.data) throw new Error('Could not fetch voucher from filter passed.');
         return decodeVouchers({
-            totalCount: 0,
+            totalCount: 1,
             pageInfo: {
                 hasNextPage: false,
                 endCursor: ''
@@ -352,16 +347,35 @@ export class Tikua {
         return this.addListenerNotices(GET_NOTICES_QUERY, { account: account.toLowerCase() }, pollInterval, callback)
     }
 
+    /**
+     * Fetches a notice from a specific input index and notice index.
+     * @param inputIndex - The index of the input from which to fetch notices.
+     * @param noticeIndex - The index of the notice inside the input from which to fetch.
+     * @returns {Promise<Notice[]>} - A promise that resolves to an array of notices fetched from the specified input index and notice index.
+     * @throws {Error} - If the application endpoint is not defined on Tikua, throws an error.
+     * @throws {Error} - If the Cartesi Dapp address or ABI is not found for the selected network.
+     * @throws {Error} - If the Input Box address or ABI is not found for the selected network.
+    */
     public fetchNoticeFromInput = async (inputIndex: number, noticeIndex: number) => {
         return await this.fetchNotice(GET_NOTICE_FROM_INPUT_QUERY, { inputIndex, noticeIndex })
     }
 
+    /**
+     * Executes a voucher on the Cartesi DApp.
+     * @param voucher - The voucher to execute.
+     * @returns {Promise<string>} - A promise that resolves to the transaction hash of the simulated execution transaction.
+     * @throws {Error} - If the Cartesi DApp address or ABI is not found for the selected network.
+     * @throws {Error} - If the Voucher currently has no proof yet.
+     */
     public executeVoucher = async (voucher: VoucherDecoded) => {
         const { publicClient, account, client, chain } = await this.prepareSender();
 
         // Grab the Cartesi Dapp address
         const appAbi = await getCartesiContractAbi('CartesiDApp')
         if (!appAbi) throw new Error('Cartesi Dapp ABI not found');
+
+        // Grab the Cartesi Dapp address
+        if (!voucher.proof) throw new Error('Proof not found for the Voucher provided.');
 
         // Simulate "executeVoucher" transaction
         const { request } = await publicClient.simulateContract({
@@ -376,6 +390,13 @@ export class Tikua {
         return txHash;
     }
 
+    /**
+     * Checks if a voucher has been executed on the Cartesi DApp.
+     * @param voucher - The voucher to check.
+     * @returns {Promise<boolean>} - A promise that resolves to a boolean indicating whether the voucher has been executed.
+     * @throws {Error} - If the Cartesi DApp address or ABI is not found for the selected network.
+     * @throws {Error} - If the voucher does not have a proof yet, indicating that it has not been executed yet.
+    */
     public checkVoucher = async (voucher: VoucherDecoded) => {
         if (!voucher.proof) throw new Error('This Voucher has no proof yet, wait for the epoch.');
         const { publicClient, account } = await this.prepareSender();
@@ -395,7 +416,6 @@ export class Tikua {
 
     /**
      * Fetches a voucher from a specific input index.
-     *
      * @param inputIndex - The index of the input from which to fetch vouchers.
      * @param voucherIndex - The index of the voucher inside input from which to fetch.
      * @returns {Promise<Voucher[]>} - A promise that resolves to an array of vouchers fetched from the specified input index.
@@ -408,7 +428,6 @@ export class Tikua {
 
     /**
      * Adds a listener for vouchers. Fetches vouchers from the GraphQL API and calls the provided callback function for each voucher.
-     *
      * @param pollInterval - The interval at which to poll for new vouchers.
      * @param callback - The callback function to be called for each voucher fetched.
      * @returns {Function} - A function that can be called to stop listening for vouchers.
@@ -420,7 +439,6 @@ export class Tikua {
     /**
      * Adds a listener for vouchers owned by a specific account.
      * Fetches vouchers from the GraphQL API and calls the provided callback function for each voucher.
-     *
      * @param pollInterval - The interval at which to poll for new vouchers.
      * @param account - The account address for which to listen for vouchers.
      * @param callback - The callback function to be called for each voucher fetched.
@@ -432,7 +450,6 @@ export class Tikua {
 
     /**
      * Deposits Ether on the Ether Portal.
-     *
      * @param amount - The amount of Ether to deposit.
      * @param execLayerData - The execution layer data for the deposit.
      * @returns {Promise<string>} - A promise that resolves to the transaction hash of the simulated deposit transaction.
@@ -464,7 +481,6 @@ export class Tikua {
 
     /**
      * Approves ERC20 tokens for deposit on the ERC20 Portal.
-     *
      * @param token - The address of the ERC20 token.
      * @param amount - The amount of ERC20 tokens to approve.
      * @returns {Promise<string>} - A promise that resolves to the transaction hash of the simulated approval transaction.
@@ -492,7 +508,6 @@ export class Tikua {
 
     /**
      * Deposits ERC20 tokens on the ERC20 Portal.
-     *
      * @param token - The address of the ERC20 token.
      * @param amount - The amount of ERC20 tokens to deposit.
      * @param execLayerData - (Optional) Execution layer data for the deposit.
@@ -534,7 +549,6 @@ export class Tikua {
         const ERC721PortalAddress = await getCartesiDeploymentAddress(chain.id, 'ERC721Portal')
         if (!ERC721PortalAddress) throw new Error('ERC20 Portal not found for the selected network');
 
-        // Simulate "executeVoucher" transaction
         const { request } = await publicClient.simulateContract({
             address: token,
             abi: ApproveERC721ABI,
@@ -549,7 +563,6 @@ export class Tikua {
 
     /**
      * Deposits an ERC721 token on the ERC721 Portal.
-     *
      * @param token - The address of the ERC721 token.
      * @param tokenId - The ID of the ERC721 token to deposit.
      * @param baseLayerData - (Optional) Base layer data for the deposit.
@@ -588,7 +601,6 @@ export class Tikua {
     /**
      * Approve ERC1155 tokens to be send to the ERC1155 portal.
      * This function will approve the portal to spend all tokens of this type.
-     *
      * @param token - Address of the ERC1155 token.
      * @param multi - Whether to set approval for the Batch Portal. If true, set approval for the Batch Portal.
      * @param approve - Whether to set approval or revoke approval. Default is true (approve).
@@ -632,7 +644,6 @@ export class Tikua {
     /**
      * Approve ERC1155 tokens to be send to ERC1155 Batch Portal.
      * This function will approve the portal to spend all tokens of this type.
-     *
      * @param token - Address of ERC1155 token.
      * @param approve - Whether to set approval or revoke approval. Default is true (approve).
      * @returns {Promise<string>} - Transaction hash of the simulated approval transaction.
