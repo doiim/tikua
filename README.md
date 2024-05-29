@@ -43,7 +43,7 @@ const tikua = new Tikua({
 });
 ```
 
-#### `sendInput(fn: string, args: any[])`
+#### `sendInput`
 
 Send a function input to the Cartesi contract.
 
@@ -56,7 +56,7 @@ Returns a promise that resolves to the transaction hash of the sent input.
 const txHash = await tikua.sendInput("attackDragon", [1, "sword"]);
 ```
 
-#### `fetchInspect(id: string)`
+#### `fetchInspect`
 
 Fetch the inspect data for a transaction ID.
 
@@ -69,7 +69,7 @@ const status = await tikua.fetchInspect("dragonStatus", [dragonId]);
 
 Returns a promise that resolves to the inspect data of the transaction.
 
-#### `addNoticesListener(pollInterval : number, fn: (report: any) => void)`
+#### `addNoticesListener`
 
 Listen for all notices triggered by the Cartesi Machine
 
@@ -82,11 +82,11 @@ const unsubscribe = await tikua.addNoticesListener(1000, (result) => {
 });
 ```
 
-#### `executeVoucher(voucher: VoucherDecoded)`
+#### `executeVoucher`
 
 Executes a voucher on the Cartesi DApp, simulating the transaction and then writing it to the blockchain if successful. This function is crucial for processing vouchers, which are essentially tasks or commands that have been issued to the DApp.
 
-voucher: VoucherDecoded: The voucher object to be executed. It must include the destination address, the payload data, and the proof of validity.
+- `voucher: VoucherDecoded`: The voucher object to be executed. It must include the destination address, the payload data, and the proof of validity.
 
 Returns a promise that resolves to the transaction hash of the executed voucher transaction.
 
@@ -100,7 +100,7 @@ const txHash = await tikua.executeVoucher(voucher);
 console.log(txHash);
 ```
 
-#### `checkVoucher(voucher: VoucherDecoded): Promise<boolean>`
+#### `checkVoucher`
 
 Checks if a voucher has been executed on the Cartesi DApp. It requires the voucher to have a proof to verify its execution status.
 
@@ -108,16 +108,15 @@ Checks if a voucher has been executed on the Cartesi DApp. It requires the vouch
 
 Returns a promise that resolves to a boolean indicating whether the voucher has been executed.
 
-#### `fetchVoucherFromInput(inputIndex: number, voucherIndex: number): Promise<Voucher[]>`
+#### `fetchVouchersFromInput`
 
 Fetches a voucher from a specific input index and voucher index within the Cartesi DApp.
 
-- `inputIndex: number`: The index of the input from which to fetch the voucher.
-- `voucherIndex: number`: The index of the voucher within the specified input.
+- `voucher: VoucherDecoded`: The voucher returned from a listener or a fetch.
 
 Returns a promise that resolves to an array of vouchers fetched from the specified input index.
 
-#### `addVouchersListener(pollInterval: number, callback: (result: any) => void): Function`
+#### `addVouchersListener`
 
 Adds a listener for vouchers, polling for new vouchers at a specified interval and executing a callback function for each new voucher.
 
@@ -126,17 +125,7 @@ Adds a listener for vouchers, polling for new vouchers at a specified interval a
 
 Returns a function that can be called to stop listening for vouchers.
 
-#### `addMyVouchersListener(pollInterval: number, account: Address, callback: (result: any) => void): Function`
-
-Adds a listener for vouchers associated with a specific account, polling for new vouchers at a specified interval and executing a callback function for each new voucher.
-
-- `pollInterval: number`: The interval, in milliseconds, at which to poll for new vouchers.
-- `account: Address`: The account address to filter the vouchers by.
-- `callback: (result: any) => void`: The callback function to execute for each voucher fetched.
-
-Returns a function that can be called to stop listening for vouchers.
-
-#### `depositEther(amount: bigint, execLayerData: string): Promise<string>`
+#### `depositEther`
 
 Deposits Ether on the Ether Portal, simulating the deposit transaction and returning the transaction hash.
 
@@ -145,7 +134,7 @@ Deposits Ether on the Ether Portal, simulating the deposit transaction and retur
 
 Returns a promise that resolves to the transaction hash of the simulated deposit transaction.
 
-#### `approveERC20(token: Address, amount: bigint): Promise<string>`
+#### `approveERC20`
 
 Approves ERC20 tokens for deposit on the ERC20 Portal, simulating the approval transaction and returning the transaction hash.
 
@@ -154,7 +143,7 @@ Approves ERC20 tokens for deposit on the ERC20 Portal, simulating the approval t
 
 Returns a promise that resolves to the transaction hash of the simulated approval transaction.
 
-#### `depositERC20(token: Address, amount: bigint, execLayerData: string): Promise<string>`
+#### `depositERC20`
 
 Deposits ERC20 tokens on the ERC20 Portal, simulating the deposit transaction and returning the transaction hash.
 
@@ -164,7 +153,7 @@ Deposits ERC20 tokens on the ERC20 Portal, simulating the deposit transaction an
 
 Returns a promise that resolves to the transaction hash of the simulated deposit transaction.
 
-#### `approveERC721(token: Address, tokenId: bigint): Promise<string>`
+#### `approveERC721`
 
 Approves an ERC721 token for deposit on the ERC721 Portal, simulating the approval transaction and returning the transaction hash.
 
@@ -173,7 +162,7 @@ Approves an ERC721 token for deposit on the ERC721 Portal, simulating the approv
 
 Returns a promise that resolves to the transaction hash of the simulated approval transaction.
 
-#### `depositERC721(token: Address, tokenId: bigint, baseLayerData: string, execLayerData: string): Promise<string>`
+#### `depositERC721`
 
 Deposits an ERC721 token on the ERC721 Portal, simulating the deposit transaction and returning the transaction hash.
 
@@ -191,12 +180,12 @@ sequenceDiagram
     ERC721 Portal->>-Cartesi Machine: Input(payload)
 ```
 
-#### `approveSingleERC1155(token: Address, approve: boolean = true)`
+#### `approveSingleERC1155`
 
 This function is used to set approval for the ERC1155 Single Portal contract to transfer your tokens.
 
 - `token: Address`: The address of the ERC1155 token.
-  approve: boolean: Whether to set approval or revoke approval. Default is true (approve).
+- `approve: boolean`: Whether to set approval or revoke approval. Default is true (approve).
 
 Returns the transaction hash of the simulated transaction.
 
@@ -205,12 +194,12 @@ const tokenAddress = "0x1234567890";
 const txHash = await tikua.approveSingleERC1155(tokenAddress, true);
 ```
 
-#### `approveBatchERC1155(token: Address, approve: boolean = true)`
+#### `approveBatchERC1155`
 
 This function is used to approve ERC1155 tokens to be sent to the ERC1155 Batch Portal. It approves the portal to spend all tokens of this type.
 
 - `token: Address`: Address: The address of the ERC1155 token.
-  approve: boolean: Whether to set approval or revoke approval. Default is true (approve).
+- `approve: boolean`: Whether to set approval or revoke approval. Default is true (approve).
 
 Returns the transaction hash of the simulated approval transaction.
 

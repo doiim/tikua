@@ -1,7 +1,12 @@
 export { Tikua } from './core.js'
 export {
     getCartesiDeploymentAddress,
-    getCartesiContractAbi
+    getCartesiContractAbi,
+    decodeEtherDeposit,
+    decodeERC20Deposit,
+    decodeERC721Deposit,
+    decodeERC1155BatchDeposit,
+    decodeERC1155SingleDeposit,
 } from './utils.js'
 export {
     chainsByName,

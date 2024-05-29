@@ -203,7 +203,6 @@ export type NoticesRawObject = {
   }[];
 };
 
-
 export type NoticeDecoded = {
   index: number;
   msgSender: Address;
@@ -247,6 +246,46 @@ export type VoucherDecoded = {
   proof?: Proof;
   decodedPayloadFunction?: string
   decodedPayloadArgs?: any;
+}
+
+export type EtherDepositDecoded = {
+  from: Address;
+  amount: BigInt;
+  execLayerData: string;
+}
+
+export type ERC20DepositDecoded = {
+  succeded: boolean;
+  token: Address;
+  from: Address;
+  amount: Address;
+  execLayerData: `0x${string}`;
+}
+
+export type ERC721DepositDecoded = {
+  token: Address,
+  from: Address,
+  tokenId: BigInt,
+  baseLayerData: `0x${string}`,
+  execLayerData: `0x${string}`,
+}
+
+export type ERC1155SingleDepositDecoded = {
+  token: Address,
+  from: Address,
+  tokenId: BigInt,
+  amount: BigInt,
+  baseLayerData: `0x${string}`,
+  execLayerData: `0x${string}`,
+}
+
+export type ERC1155BatchDepositDecoded = {
+  token: Address,
+  from: Address,
+  tokenIds: BigInt[],
+  amounts: BigInt[],
+  baseLayerData: `0x${string}`,
+  execLayerData: `0x${string}`,
 }
 
 export const ApproveERC20ABI = parseAbi([

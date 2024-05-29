@@ -70,7 +70,6 @@ app.addAdvanceHandler(async ({ payload, metadata }) => {
     case "ERC20Portal":
       // Decode ERC20 Portal Deposit parameters returned from Portal + Execution Layer Data
       const regexERC20 = /^0x([0-9a-f]{2})([0-9a-f]{40})([0-9a-f]{40})([0-9a-f]{64})([0-9a-f]*)$/;
-      console.log(payload)
       const slicesERC20 = payload.match(regexERC20);
       if (!slicesERC20) return "reject"
       const ERC20Params = {
@@ -96,7 +95,6 @@ app.addAdvanceHandler(async ({ payload, metadata }) => {
     case "ERC721Portal":
       // Decode ERC721 Portal Deposit parameters returned from Portal + Execution Layer Data
       const regexERC721 = /^0x([0-9a-f]{40})([0-9a-f]{40})([0-9a-f]{64})([0-9a-f]*)$/;
-      console.log(payload)
       const slicesERC721 = payload.match(regexERC721);
       if (!slicesERC721) return "reject"
       const ERC721Params = {
@@ -126,7 +124,6 @@ app.addAdvanceHandler(async ({ payload, metadata }) => {
     case "ERC1155SinglePortal":
       // Decode ERC1155 Single Portal Deposit parameters returned from Portal + Execution Layer Data
       const regexERC1155Single = /^0x([0-9a-f]{40})([0-9a-f]{40})([0-9a-f]{64})([0-9a-f]{64})([0-9a-f]*)$/;
-      console.log(payload)
       const slicesERC1155Single = payload.match(regexERC1155Single);
       if (!slicesERC1155Single) return "reject"
       const ERC1155SingleParams = {
@@ -157,14 +154,13 @@ app.addAdvanceHandler(async ({ payload, metadata }) => {
     case "ERC1155BatchPortal":
       // Decode ERC1155 Batch Portal Deposit parameters returned from Portal + Execution Layer Data
       const regexERC1155Batch = /^0x([0-9a-f]{40})([0-9a-f]{40})([0-9a-f]*)$/;
-      console.log(payload)
       const slicesERC1155Batch = payload.match(regexERC1155Batch);
       if (!slicesERC1155Batch) return "reject"
       // This execution Layer data could be used to send custom data
       const [tokenIds, amounts, baseLayerData, execLayerData] = decodeAbiParameters(
         [
-          { name: 'tokenId', type: 'uint256[]' },
-          { name: 'amount', type: 'uint256[]' },
+          { name: 'tokenIds', type: 'uint256[]' },
+          { name: 'amounts', type: 'uint256[]' },
           { name: 'baseLayerData', type: 'string' },
           { name: 'execLayerData', type: 'string' },
         ],
