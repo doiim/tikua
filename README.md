@@ -182,23 +182,13 @@ Deposits an ERC721 token on the ERC721 Portal, simulating the deposit transactio
 - `baseLayerData: string`: Optional base layer data for the deposit.
 - `execLayerData: string`: Optional execution layer data for the deposit.
 
-Returns q promise that resolves to the transaction hash of the simulated deposit transaction.
+Returns a promise that resolves to the transaction hash of the simulated deposit transaction.
 
-#### `addMyNoticesListener(pollInterval : number, account:Address,  fn: (report: any) => void)`
-
-Listen for all notices triggered related to your address. This is similar to `addNoticesListener`, but it uses your configured address to filter the results.
-
-- `pollInterval: number`: Time between each request to GraphQL.
-- `account: Address`: The account to listen for notices.
-- `fn: (report: any) => void`: The function to call when a report is received.
-
-Returns an unsubscribe function to stop listening for reports.
-
-```ts
-const myWallet = "0x0123123123123";
-const unsubscribe = await tikua.addNoticesListener(1000, myWallet, (result) => {
-  console.log(result);
-});
+```mermaid
+sequenceDiagram
+    User->>+ERC721 Portal: depositERC721
+    ERC721 Portal->>+Dapp Contract: Transfer Token
+    ERC721 Portal->>-Cartesi Machine: Input(payload)
 ```
 
 #### `approveSingleERC1155(token: Address, approve: boolean = true)`
@@ -241,6 +231,13 @@ Deposits a single ERC1155 token into the ERC1155 Single Portal. This function pr
 
 Returns `Promise<string>` - A promise that resolves to the transaction hash of the simulated deposit transaction.
 
+```mermaid
+sequenceDiagram
+    User->>+ERC1155 Single Portal: depositSingleERC1155
+    ERC1155 Single Portal->>+Dapp Contract: Transfer Token
+    ERC1155 Single Portal->>-Cartesi Machine: Input(payload)
+```
+
 ```ts
 const tokenAddress = "0x...";
 const tokenId = BigInt(1);
@@ -271,6 +268,13 @@ Deposits a batch of ERC1155 tokens into the ERC1155 Batch Portal on a specified 
 - `execLayerData: string` (Optional) - Execution layer data that may be required for the deposit transaction. This parameter is optional and can be left empty if not needed.
 
 Returns `Promise<string>` - A promise that resolves to the transaction hash of the deposit operation. This hash can be used to track the transaction on the blockchain.
+
+```mermaid
+sequenceDiagram
+    User->>+ERC1155 Batch Portal: depositBatchERC1155
+    ERC1155 Batch Portal->>+Dapp Contract: Transfer Tokens
+    ERC1155 Batch Portal->>-Cartesi Machine: Input(payload)
+```
 
 ```ts
 const tokenAddress = "0xYourTokenAddressHere";
@@ -320,7 +324,6 @@ For the backend we use a framework call [Deroll](https://github.com/tuler/deroll
 
 [Human Readable ABI definition](https://abitype.dev/api/human)
 [Viem library](https://viem.sh/)
-[Deroll](https://github.com/tuler/deroll)
 
 ## For Maintainers
 
