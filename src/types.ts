@@ -250,7 +250,7 @@ export type VoucherDecoded = {
 
 export type EtherDepositDecoded = {
   from: Address;
-  amount: BigInt;
+  amount: bigint;
   execLayerData: string;
 }
 
@@ -258,14 +258,14 @@ export type ERC20DepositDecoded = {
   succeded: boolean;
   token: Address;
   from: Address;
-  amount: Address;
+  amount: bigint;
   execLayerData: `0x${string}`;
 }
 
 export type ERC721DepositDecoded = {
   token: Address,
   from: Address,
-  tokenId: BigInt,
+  tokenId: bigint,
   baseLayerData: `0x${string}`,
   execLayerData: `0x${string}`,
 }
@@ -273,8 +273,8 @@ export type ERC721DepositDecoded = {
 export type ERC1155SingleDepositDecoded = {
   token: Address,
   from: Address,
-  tokenId: BigInt,
-  amount: BigInt,
+  tokenId: bigint,
+  amount: bigint,
   baseLayerData: `0x${string}`,
   execLayerData: `0x${string}`,
 }
@@ -282,8 +282,8 @@ export type ERC1155SingleDepositDecoded = {
 export type ERC1155BatchDepositDecoded = {
   token: Address,
   from: Address,
-  tokenIds: BigInt[],
-  amounts: BigInt[],
+  tokenIds: bigint[],
+  amounts: bigint[],
   baseLayerData: `0x${string}`,
   execLayerData: `0x${string}`,
 }

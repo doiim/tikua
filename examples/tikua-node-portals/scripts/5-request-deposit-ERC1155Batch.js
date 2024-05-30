@@ -51,6 +51,10 @@ const hash = await tikua.depositBatchERC1155(tokenAddress, [0, 1], [10, 10], str
 await publicClient.waitForTransactionReceipt({ hash });
 console.log('Deposit ERC1155 request sent.')
 
+const hashRevoke = await tikua.approveBatchERC1155(tokenAddress, false);
+await publicClient.waitForTransactionReceipt({ hash: hashRevoke });
+console.log('Revoke approval for token.')
+
 console.log('Token 1 Owner:',
     await publicClient.readContract({
         address: tokenAddress,

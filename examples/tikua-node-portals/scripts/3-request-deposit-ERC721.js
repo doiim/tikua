@@ -43,9 +43,9 @@ const tikua = new Tikua({
     abi: abi
 })
 
-// const hashApprove = await tikua.approveERC721(tokenAddress, 0);
-// await publicClient.waitForTransactionReceipt({ hash: hashApprove });
-// console.log('Approved')
+const hashApprove = await tikua.approveERC721(tokenAddress, 0);
+await publicClient.waitForTransactionReceipt({ hash: hashApprove });
+console.log('Approved')
 
 const hash = await tikua.depositERC721(tokenAddress, 0, stringToHex('test'), stringToHex('test2'));
 await publicClient.waitForTransactionReceipt({ hash });

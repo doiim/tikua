@@ -161,7 +161,7 @@ export const decodeERC721Deposit = (payload: `0x${string}`): ERC721DepositDecode
     const [baseLayerData, execLayerData] = decodeAbiParameters(
         [
             { name: 'baseLayerData', type: 'string' },
-            { name: 'execLayerData', type: 'uint' },
+            { name: 'execLayerData', type: 'string' },
         ],
         `0x${slicesERC721[4]}`
     )
@@ -170,8 +170,8 @@ export const decodeERC721Deposit = (payload: `0x${string}`): ERC721DepositDecode
         from: getAddress(`0x${slicesERC721[2]}`),
         tokenId: hexToBigInt(`0x${slicesERC721[3]}`),
         // This execution Layer data could be used to send custom data
-        baseLayerData,
-        execLayerData
+        baseLayerData: baseLayerData as `0x${string}`,
+        execLayerData: execLayerData as `0x${string}`
     }
 }
 
@@ -192,7 +192,7 @@ export const decodeERC1155SingleDeposit = (payload: `0x${string}`): ERC1155Singl
     const [baseLayerData, execLayerData] = decodeAbiParameters(
         [
             { name: 'baseLayerData', type: 'string' },
-            { name: 'execLayerData', type: 'uint' },
+            { name: 'execLayerData', type: 'string' },
         ],
         `0x${slicesERC1155Single[5]}`
     )
@@ -202,8 +202,8 @@ export const decodeERC1155SingleDeposit = (payload: `0x${string}`): ERC1155Singl
         tokenId: hexToBigInt(`0x${slicesERC1155Single[3]}`),
         amount: hexToBigInt(`0x${slicesERC1155Single[4]}`),
         // This execution Layer data could be used to send custom data
-        baseLayerData,
-        execLayerData
+        baseLayerData: baseLayerData as `0x${string}`,
+        execLayerData: execLayerData as `0x${string}`
     }
 }
 
@@ -234,9 +234,9 @@ export const decodeERC1155BatchDeposit = (payload: `0x${string}`): ERC1155BatchD
     return {
         token: getAddress(`0x${slicesERC1155Batch[1]}`),
         from: getAddress(`0x${slicesERC1155Batch[2]}`),
-        tokenIds: tokenIds as BigInt[],
-        amounts: amounts as BigInt[],
-        baseLayerData,
-        execLayerData,
+        tokenIds: tokenIds as bigint[],
+        amounts: amounts as bigint[],
+        baseLayerData: baseLayerData as `0x${string}`,
+        execLayerData: execLayerData as `0x${string}`
     }
 }

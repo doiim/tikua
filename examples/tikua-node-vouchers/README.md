@@ -17,13 +17,13 @@ npm install
 2. Request Increment counter
 
 ```sh
-node scripts/1-request-increment.js 0x0YOURDEPLOYEDCOUNTERADDRESS
+node scripts/1-request-increment.js 0x59b670e9fa9d0a427751af201d676719a970857b # Counter Contract
 ```
 
 3. The second script will fetch all the Vouchers with proofs and will call executeVoucher to increment the counter on the vouchers not executed yet.
 
 ```sh
-node scripts/2-execute-voucher.js 0x0YOURDEPLOYEDCOUNTERADDRESS
+node scripts/2-execute-voucher.js 0x59b670e9fa9d0a427751af201d676719a970857b # Counter Contract
 ```
 
 **After run all the scripts above you will see an output with the smart-contract address deployed to be used on node examples.**

@@ -1,5 +1,16 @@
 import { createApp } from "@deroll/app";
-import { decodeFunctionData, parseAbi, encodeFunctionData, decodeAbiParameters, parseAbiParameters, getAddress, fromHex, hexToBigInt } from "viem";
+import {
+  parseAbi,
+  encodeFunctionData,
+  getAddress
+} from "viem";
+import {
+  decodeERC1155BatchDeposit,
+  decodeERC1155SingleDeposit,
+  decodeERC20Deposit,
+  decodeERC721Deposit,
+  decodeEtherDeposit
+} from "@doiim/tikua"
 
 const PortalAddresses: { [key: string]: string } = {
   "0xedB53860A6B52bbb7561Ad596416ee9965B055Aa": "ERC1155BatchPortal",
@@ -46,145 +57,75 @@ app.addAdvanceHandler(async ({ payload, metadata }) => {
   // const { functionName, args } = decodeFunctionData({ abi, data: payload });
   switch (PortalAddresses[getAddress(metadata.msg_sender)]) {
     case "EtherPortal":
-      // Decode Ether Deposit parameters returned from Portal + Execution Layer Data
-      const regexEther = /^0x([0-9a-f]{40})([0-9a-f]{64})([0-9a-f]*)$/;
-      const slicesEther = payload.match(regexEther);
-      if (!slicesEther) return "reject"
-      const etherParams = {
-        from: getAddress(`0x${slicesEther[1]}`),
-        amount: BigInt(fromHex(`0x${slicesEther[2]}`, 'number')),
-        // This execution Layer data could be used to send custom data
-        execLayerData: `0x${slicesEther[3]}`
-      }
-
+      const EtherDecoded = decodeEtherDeposit(payload)
       // Create a Voucher to return funds to the Sender.
       app.createVoucher({
         destination: dappAddress,
         payload: encodeFunctionData({
           abi: dappAbi,
           functionName: "withdrawEther",
-          args: [etherParams.from, etherParams.amount]
+          args: [EtherDecoded.from, EtherDecoded.amount]
         }),
       })
       return "accept";
     case "ERC20Portal":
-      // Decode ERC20 Portal Deposit parameters returned from Portal + Execution Layer Data
-      const regexERC20 = /^0x([0-9a-f]{2})([0-9a-f]{40})([0-9a-f]{40})([0-9a-f]{64})([0-9a-f]*)$/;
-      const slicesERC20 = payload.match(regexERC20);
-      if (!slicesERC20) return "reject"
-      const ERC20Params = {
-        succeded: !!Number(`0x${slicesERC20[1]}`),
-        token: getAddress(`0x${slicesERC20[2]}`),
-        from: getAddress(`0x${slicesERC20[3]}`),
-        amount: hexToBigInt(`0x${slicesERC20[4]}`),
-        // This execution Layer data could be used to send custom data
-        execLayerData: `0x${slicesERC20[5]}`
-      }
-      if (!ERC20Params.succeded) return "reject"
+      const ERC20Decoded = decodeERC20Deposit(payload)
+      if (!ERC20Decoded.succeded) return "reject"
       // Create a Voucher to return funds to the Sender.
       app.createVoucher({
-        destination: ERC20Params.token,
+        destination: ERC20Decoded.token,
         payload: encodeFunctionData({
           abi: ERC20Abi,
           functionName: "transfer",
-          args: [ERC20Params.from, ERC20Params.amount]
+          args: [ERC20Decoded.from, ERC20Decoded.amount]
         }),
       })
       return "accept";
 
     case "ERC721Portal":
-      // Decode ERC721 Portal Deposit parameters returned from Portal + Execution Layer Data
-      const regexERC721 = /^0x([0-9a-f]{40})([0-9a-f]{40})([0-9a-f]{64})([0-9a-f]*)$/;
-      const slicesERC721 = payload.match(regexERC721);
-      if (!slicesERC721) return "reject"
-      const ERC721Params = {
-        token: getAddress(`0x${slicesERC721[1]}`),
-        from: getAddress(`0x${slicesERC721[2]}`),
-        tokenId: hexToBigInt(`0x${slicesERC721[3]}`),
-        // This execution Layer data could be used to send custom data
-        data: decodeAbiParameters(
-          [
-            { name: 'baseLayerData', type: 'string' },
-            { name: 'execLayerData', type: 'uint' },
-          ],
-          `0x${slicesERC721[4]}`
-        )
-      }
+      const ERC721Decoded = await decodeERC721Deposit(payload)
       // Create a Voucher to return NFT to the Sender.
       app.createVoucher({
-        destination: ERC721Params.token,
+        destination: ERC721Decoded.token,
         payload: encodeFunctionData({
           abi: ERC721Abi,
           functionName: "transferFrom",
-          args: [dappAddress, ERC721Params.from, ERC721Params.tokenId]
+          args: [dappAddress, ERC721Decoded.from, ERC721Decoded.tokenId]
         }),
       })
       return "accept";
 
     case "ERC1155SinglePortal":
-      // Decode ERC1155 Single Portal Deposit parameters returned from Portal + Execution Layer Data
-      const regexERC1155Single = /^0x([0-9a-f]{40})([0-9a-f]{40})([0-9a-f]{64})([0-9a-f]{64})([0-9a-f]*)$/;
-      const slicesERC1155Single = payload.match(regexERC1155Single);
-      if (!slicesERC1155Single) return "reject"
-      const ERC1155SingleParams = {
-        token: getAddress(`0x${slicesERC1155Single[1]}`),
-        from: getAddress(`0x${slicesERC1155Single[2]}`),
-        tokenId: hexToBigInt(`0x${slicesERC1155Single[3]}`),
-        amount: hexToBigInt(`0x${slicesERC1155Single[4]}`),
-        // This execution Layer data could be used to send custom data
-        data: decodeAbiParameters(
-          [
-            { name: 'baseLayerData', type: 'string' },
-            { name: 'execLayerData', type: 'uint' },
-          ],
-          `0x${slicesERC1155Single[5]}`
-        )
-      }
+      const ERC1155SingleDecoded = await decodeERC1155SingleDeposit(payload)
       // Create a Voucher to return NFTs to the Sender.
       app.createVoucher({
-        destination: ERC1155SingleParams.token,
+        destination: ERC1155SingleDecoded.token,
         payload: encodeFunctionData({
           abi: ERC1155SingleAbi,
           functionName: "safeTransferFrom",
-          args: [dappAddress, ERC1155SingleParams.from, ERC1155SingleParams.tokenId, ERC1155SingleParams.amount, '0x']
+          args: [
+            dappAddress,
+            ERC1155SingleDecoded.from,
+            ERC1155SingleDecoded.tokenId,
+            ERC1155SingleDecoded.amount,
+            '0x']
         }),
       })
       return "accept";
 
     case "ERC1155BatchPortal":
-      // Decode ERC1155 Batch Portal Deposit parameters returned from Portal + Execution Layer Data
-      const regexERC1155Batch = /^0x([0-9a-f]{40})([0-9a-f]{40})([0-9a-f]*)$/;
-      const slicesERC1155Batch = payload.match(regexERC1155Batch);
-      if (!slicesERC1155Batch) return "reject"
-      // This execution Layer data could be used to send custom data
-      const [tokenIds, amounts, baseLayerData, execLayerData] = decodeAbiParameters(
-        [
-          { name: 'tokenIds', type: 'uint256[]' },
-          { name: 'amounts', type: 'uint256[]' },
-          { name: 'baseLayerData', type: 'string' },
-          { name: 'execLayerData', type: 'string' },
-        ],
-        `0x${slicesERC1155Batch[3]}`
-      )
-      const ERC1155BatchParams = {
-        token: getAddress(`0x${slicesERC1155Batch[1]}`),
-        from: getAddress(`0x${slicesERC1155Batch[2]}`),
-        tokenIds,
-        amounts,
-        baseLayerData,
-        execLayerData,
-      }
+      const ERC1155BatchDecoded = await decodeERC1155BatchDeposit(payload)
       // Create a Voucher to return NFTs to the Sender.
       app.createVoucher({
-        destination: ERC1155BatchParams.token,
+        destination: ERC1155BatchDecoded.token,
         payload: encodeFunctionData({
           abi: ERC1155BatchAbi,
           functionName: "safeBatchTransferFrom",
           args: [
             dappAddress,
-            ERC1155BatchParams.from,
-            ERC1155BatchParams.tokenIds,
-            ERC1155BatchParams.amounts,
+            ERC1155BatchDecoded.from,
+            ERC1155BatchDecoded.tokenIds,
+            ERC1155BatchDecoded.amounts,
             '0x'
           ]
         }),

@@ -45,7 +45,6 @@ const tikua = new Tikua({
 tikua.addVouchersListener(1000, async (result) => {
     console.log('Balance: ', await publicClient.getBalance({ address: account.address }))
     for (const voucher of result) {
-        console.log('Voucher found:', voucher)
         console.log('Was executed?', voucher.input.index, voucher.proof.validity.outputIndexWithinInput, await tikua.checkVoucher(voucher))
         if (!await tikua.checkVoucher(voucher)) {
             console.log('Will execute voucher')
@@ -56,13 +55,6 @@ tikua.addVouchersListener(1000, async (result) => {
             console.log('VOUCHER EXECUTED:', voucher.input.index, voucher.proof.validity.outputIndexWithinInput)
         }
     }
-    // Check the current counter directly on Counter contract
-    // const currentCount = await publicClient.readContract({
-    //     abi: parseAbi(abi),
-    //     functionName: 'getCount',
-    //     address: counterAddress,
-    //     args: [],
-    // });
     console.log('\nBalance AFTER: ', await publicClient.getBalance({ address: account.address }))
 
 })

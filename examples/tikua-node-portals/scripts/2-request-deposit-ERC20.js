@@ -54,7 +54,7 @@ console.log('DAPP Balance:',
     await publicClient.readContract({
         address: tokenAddress,
         abi: parseAbi(abi),
-        functionName: 'ownerOf',
-        args: [0]
+        functionName: 'balanceOf',
+        args: [account.address]
     })
 )

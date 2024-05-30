@@ -1,6 +1,6 @@
 
 import { createPublicClient, createWalletClient, http, isAddress, parseAbi } from 'viem'
-import { localhost } from 'viem/chains'
+import { hardhat } from 'viem/chains'
 import { privateKeyToAccount } from 'viem/accounts'
 import { Tikua, getCartesiContractAbi } from '@doiim/tikua'
 
@@ -21,12 +21,12 @@ const abi = [
 
 const client = createWalletClient({
     account,
-    chain: localhost,
+    chain: hardhat,
     transport: http(),
 })
 
 const publicClient = createPublicClient({
-    chain: localhost,
+    chain: hardhat,
     transport: http(),
 })
 
@@ -40,7 +40,6 @@ const tikua = new Tikua({
 // console.log(await tikua.fetchVoucherFromInput(0, 0))
 tikua.addVouchersListener(1000, async (result) => {
     for (const voucher of result) {
-        console.log('Voucher found:', voucher.input.index, voucher.proof.validity.outputIndexWithinInput)
         console.log('Was executed?', await tikua.checkVoucher(voucher))
         if (!await tikua.checkVoucher(voucher)) {
             console.log('Will execute voucher')

@@ -18,10 +18,10 @@ npm install
 
 ```sh
 node scripts/1-request-deposit-ether.js
-node scripts/2-request-deposit-ERC20.js 0x123123..... # ERC20 Token deployed
-node scripts/3-request-deposit-ERC721.js 0x123123.... # ERC721 Token deployed
-node scripts/4-request-deposit-ERC1155Single.js 0x123123... # ERC1155 Token deployed
-node scripts/5-request-deposit-ERC1155Batch.js 0x123123... # ERC1155 Token deployed
+node scripts/2-request-deposit-ERC20.js 0x59b670e9fa9d0a427751af201d676719a970857b # ERC20 Token
+node scripts/3-request-deposit-ERC721.js 0x4ed7c70f96b99c776995fb64377f0d4ab3b0e1c1 # ERC721 Token
+node scripts/4-request-deposit-ERC1155Single.js 0x322813fd9a801c5507c9de605d63cea4f2ce6c44 # ERC1155 Token
+node scripts/5-request-deposit-ERC1155Batch.js 0x322813fd9a801c5507c9de605d63cea4f2ce6c44 # ERC1155 Token
 ```
 
 3. After run some commands above, you can request execute vouchers using command below.
