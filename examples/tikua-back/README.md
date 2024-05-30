@@ -1,4 +1,4 @@
-# Deroll tamplate to be used with Tikua - Cartesi SDK
+# Deroll template to be used with Tikua SDK
 
 This is a [Cartesi CLI](https://docs.cartesi.io/cartesi-rollups/1.3/quickstart/) template for Cartesi applications that use the [Deroll](https://github.com/tuler/deroll) framework.
 

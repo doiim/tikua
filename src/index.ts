@@ -1,7 +1,12 @@
 export { Tikua } from './core.js'
 export {
     getCartesiDeploymentAddress,
-    getCartesiContractAbi
+    getCartesiContractAbi,
+    decodeEtherDeposit,
+    decodeERC20Deposit,
+    decodeERC721Deposit,
+    decodeERC1155BatchDeposit,
+    decodeERC1155SingleDeposit,
 } from './utils.js'
 export {
     chainsByName,
@@ -9,8 +14,14 @@ export {
     ContractName,
     ChainName,
     TikuaParams,
+    Proof,
+    NoticesRawObject,
+    NoticeDecoded,
+    VouchersRawObject,
+    VoucherDecoded
 } from './types.js'
 export {
     parseAbi,
-    Address
+    Address,
+    getAddress
 } from 'viem'

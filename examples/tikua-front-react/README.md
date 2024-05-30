@@ -1,4 +1,4 @@
-# Client Example - Tikua - Cartesi SDK
+# Client Example - Tikua SDK
 
 This example project demonstrates how to use the Tikua client in a JavaScript frontend application. The project uses React and includes an example of how to interact with a dapp deployed on the network. It provides a simple user interface to send inputs to the dapp, drink potions, and check the hero status.
 

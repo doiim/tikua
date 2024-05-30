@@ -1,0 +1,13 @@
+{
+  "name": "tikua-example-node-vouchers",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "run": "node index"
+  },
+  "dependencies": {
+    "@doiim/tikua": "file:../../doiim-tikua-0.7.0.tgz",
+    "viem": "^2.9.25"
+  }
+}
