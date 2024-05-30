@@ -56,6 +56,12 @@ Returns a promise that resolves to the transaction hash of the sent input.
 const txHash = await tikua.sendInput("attackDragon", [1, "sword"]);
 ```
 
+```mermaid
+sequenceDiagram
+    User->>+InputBox: sendInput
+    InputBox->>+Cartesi Machine: Advance Input
+```
+
 #### `fetchInspect`
 
 Fetch the inspect data for a transaction ID.
@@ -65,6 +71,13 @@ Fetch the inspect data for a transaction ID.
 
 ```ts
 const status = await tikua.fetchInspect("dragonStatus", [dragonId]);
+```
+
+```mermaid
+sequenceDiagram
+    User->>+Cartesi Machine: Call Inspect
+    Cartesi Machine-->Cartesi Machine: Create Report
+    Cartesi Machine->>-User: Return Report
 ```
 
 Returns a promise that resolves to the inspect data of the transaction.
@@ -81,6 +94,51 @@ const unsubscribe = await tikua.addNoticesListener(1000, (result) => {
   console.log(result);
 });
 ```
+
+```mermaid
+sequenceDiagram
+    User->>+Tikua: addNoticesListener
+    Tikua->>+User: return unsubscribe()
+    Tikua->>+GraphQL Server: Fetch new Notices(recurrent)
+    GraphQL Server-->>-User: Return new Notices
+    User->>-Tikua: Call unsubscribe()
+    Tikua->>-User: void
+```
+
+#### `addVouchersListener`
+
+Adds a listener for vouchers, polling for new vouchers at a specified interval and executing a callback function for each new voucher.
+
+- `pollInterval: number`: The interval, in milliseconds, at which to poll for new vouchers.
+- `callback: (result: VoucherDecoded[]) => void`: The callback function to execute for each voucher fetched.
+
+Returns a function that can be called to stop listening for vouchers.
+
+```mermaid
+sequenceDiagram
+    User->>+Tikua: addVouchersListener
+    Tikua->>+User: return unsubscribe()
+    Tikua->>+GraphQL Server: Fetch new Vouchers(recurrent)
+    GraphQL Server-->>-User: Return new Vouchers
+    User->>-Tikua: Call unsubscribe()
+    Tikua->>-User: void
+```
+
+#### `checkVoucher`
+
+Checks if a voucher has been executed on the Cartesi DApp. It requires the voucher to have a proof to verify its execution status.
+
+- `voucher: VoucherDecoded`: The voucher object to check, which must include a proof of execution.
+
+Returns a promise that resolves to a boolean indicating whether the voucher has been executed.
+
+#### `fetchVouchersFromInput`
+
+Fetches a voucher from a specific input index and voucher index within the Cartesi DApp.
+
+- `voucher: VoucherDecoded`: The voucher returned from a listener or a fetch.
+
+Returns a promise that resolves to an array of vouchers fetched from the specified input index.
 
 #### `executeVoucher`
 
@@ -100,30 +158,13 @@ const txHash = await tikua.executeVoucher(voucher);
 console.log(txHash);
 ```
 
-#### `checkVoucher`
-
-Checks if a voucher has been executed on the Cartesi DApp. It requires the voucher to have a proof to verify its execution status.
-
-- `voucher: VoucherDecoded`: The voucher object to check, which must include a proof of execution.
-
-Returns a promise that resolves to a boolean indicating whether the voucher has been executed.
-
-#### `fetchVouchersFromInput`
-
-Fetches a voucher from a specific input index and voucher index within the Cartesi DApp.
-
-- `voucher: VoucherDecoded`: The voucher returned from a listener or a fetch.
-
-Returns a promise that resolves to an array of vouchers fetched from the specified input index.
-
-#### `addVouchersListener`
-
-Adds a listener for vouchers, polling for new vouchers at a specified interval and executing a callback function for each new voucher.
-
-- `pollInterval: number`: The interval, in milliseconds, at which to poll for new vouchers.
-- `callback: (result: any) => void`: The callback function to execute for each voucher fetched.
-
-Returns a function that can be called to stop listening for vouchers.
+```mermaid
+sequenceDiagram
+    sequenceDiagram
+    User->>+Dapp Contract: executeVoucher
+    Dapp Contract->>User: Transaction hash
+    Dapp Contract->>-Dapp Contract: Execute voucher transactions
+```
 
 #### `depositEther`
 
@@ -153,6 +194,14 @@ Deposits ERC20 tokens on the ERC20 Portal, simulating the deposit transaction an
 
 Returns a promise that resolves to the transaction hash of the simulated deposit transaction.
 
+```mermaid
+sequenceDiagram
+    User->>+ERC20 Portal: depositERC20
+    ERC20 Portal-->>User: return hash
+    ERC20 Portal->>+Dapp Contract: Transfer Token
+    ERC20 Portal->>-Cartesi Machine: Input(payload)
+```
+
 #### `approveERC721`
 
 Approves an ERC721 token for deposit on the ERC721 Portal, simulating the approval transaction and returning the transaction hash.
@@ -176,6 +225,7 @@ Returns a promise that resolves to the transaction hash of the simulated deposit
 ```mermaid
 sequenceDiagram
     User->>+ERC721 Portal: depositERC721
+    ERC721 Portal-->>User: return hash
     ERC721 Portal->>+Dapp Contract: Transfer Token
     ERC721 Portal->>-Cartesi Machine: Input(payload)
 ```
@@ -220,13 +270,6 @@ Deposits a single ERC1155 token into the ERC1155 Single Portal. This function pr
 
 Returns `Promise<string>` - A promise that resolves to the transaction hash of the simulated deposit transaction.
 
-```mermaid
-sequenceDiagram
-    User->>+ERC1155 Single Portal: depositSingleERC1155
-    ERC1155 Single Portal->>+Dapp Contract: Transfer Token
-    ERC1155 Single Portal->>-Cartesi Machine: Input(payload)
-```
-
 ```ts
 const tokenAddress = "0x...";
 const tokenId = BigInt(1);
@@ -234,16 +277,21 @@ const amount = BigInt(100);
 const baseLayerData = "";
 const execLayerData = "";
 
-tikuaInstance
-  .depositSingleERC1155(
-    tokenAddress,
-    tokenId,
-    amount,
-    baseLayerData,
-    execLayerData
-  )
-  .then((txHash) => console.log("Transaction Hash:", txHash))
-  .catch((error) => console.error("Error depositing ERC1155 token:", error));
+const txHash = await tikua.depositSingleERC1155(
+  tokenAddress,
+  tokenId,
+  amount,
+  baseLayerData,
+  execLayerData
+);
+```
+
+```mermaid
+sequenceDiagram
+    User->>+ERC1155 Single Portal: depositSingleERC1155
+    ERC1155 Single Portal-->>User: return hash
+    ERC1155 Single Portal->>+Dapp Contract: Transfer Token
+    ERC1155 Single Portal->>-Cartesi Machine: Input(payload)
 ```
 
 #### `depositBatchERC1155`
@@ -258,13 +306,6 @@ Deposits a batch of ERC1155 tokens into the ERC1155 Batch Portal on a specified 
 
 Returns `Promise<string>` - A promise that resolves to the transaction hash of the deposit operation. This hash can be used to track the transaction on the blockchain.
 
-```mermaid
-sequenceDiagram
-    User->>+ERC1155 Batch Portal: depositBatchERC1155
-    ERC1155 Batch Portal->>+Dapp Contract: Transfer Tokens
-    ERC1155 Batch Portal->>-Cartesi Machine: Input(payload)
-```
-
 ```ts
 const tokenAddress = "0xYourTokenAddressHere";
 const tokenIds = [1n, 2n, 3n];
@@ -272,17 +313,21 @@ const amounts = [100n, 200n, 300n];
 const baseLayerData = "";
 const execLayerData = "";
 
-depositBatchERC1155(
+const txHash = await tikua.depositBatchERC1155(
   tokenAddress,
   tokenIds,
   amounts,
   baseLayerData,
   execLayerData
-)
-  .then((txHash) => console.log(`Transaction hash: ${txHash}`))
-  .catch((error) =>
-    console.error(`Error depositing ERC1155 tokens: ${error.message}`)
-  );
+);
+```
+
+```mermaid
+sequenceDiagram
+    User->>+ERC1155 Batch Portal: depositBatchERC1155
+    ERC1155 Batch Portal-->>User: return hash
+    ERC1155 Batch Portal->>+Dapp Contract: Transfer Tokens
+    ERC1155 Batch Portal->>-Cartesi Machine: Input(payload)
 ```
 
 ### Utility Static Functions
@@ -304,6 +349,56 @@ Retrieves the ABI (Application Binary Interface) of a Cartesi contract based on 
 - `contract` (ContractName): The name of the contract to retrieve the ABI for.
 
 Returns the ABI of the specified Cartesi contract.
+
+#### `decodeEtherDeposit` (For Backend decoding)
+
+Decodes the payload of an Ether deposit transaction into an object containing the deposit details.
+
+- `payload` (\`0x\${string}\`): The payload of the Ether deposit transaction.
+
+Returns an object containing the decoded details of the Ether deposit.
+
+Throws an error if the payload is invalid.
+
+#### `decodeERC20Deposit` (For Backend decoding)
+
+Decodes the payload of an ERC20 deposit transaction into an object containing the deposit details.
+
+- `payload` (\`0x\${string}\`): The payload of the ERC20 deposit transaction.
+
+Returns an object containing the decoded details of the ERC20 deposit.
+
+Throws an error if the payload is invalid or the ERC20 deposit transaction failed.
+
+#### `decodeERC721Deposit` (For Backend decoding)
+
+Decodes the payload of an ERC721 deposit transaction into an object containing the deposit details.
+
+- `payload` (\`0x\${string}\`): The payload of the ERC721 deposit transaction.
+
+Returns an object containing the decoded details of the ERC721 deposit.
+
+Throws an error if the payload is invalid.
+
+#### `decodeERC1155SingleDeposit` (For Backend decoding)
+
+Decodes the payload of an ERC1155 single deposit transaction into an object containing the deposit details.
+
+- `payload` (\`0x\${string}\`): The payload of the ERC1155 single deposit transaction.
+
+Returns an object containing the decoded details of the ERC1155 single deposit.
+
+Throws an error if the payload is invalid.
+
+#### `decodeERC1155BatchDeposit` (For Backend decoding)
+
+Decodes the payload of an ERC1155 batch deposit transaction into an object containing the deposit details.
+
+- `payload` (\`0x\${string}\`): The payload of the ERC1155 batch deposit transaction.
+
+Returns an object containing the decoded details of the ERC1155 batch deposit.
+
+Throws an error if the payload is invalid.
 
 ## Backend
 
