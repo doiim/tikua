@@ -160,7 +160,6 @@ console.log(txHash);
 
 ```mermaid
 sequenceDiagram
-    sequenceDiagram
     User->>+Dapp Contract: executeVoucher
     Dapp Contract->>User: Transaction hash
     Dapp Contract->>-Dapp Contract: Execute voucher transactions
