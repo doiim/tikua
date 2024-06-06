@@ -403,6 +403,47 @@ Throws an error if the payload is invalid.
 
 For the backend we use a framework call [Deroll](https://github.com/tuler/deroll). It uses a Typescript backend structure centralized in an ABI protocol same way Tikua. You can start from an example implementation on our [Examples](https://github.com/doiim/tikua/tree/master/examples) folder. There you will find a project using Deroll framework to talk with a frontend using Tikua. Deroll uses ABI for encode and decode function calls/responses, accelerating your development in multiple aspects. Both Deroll and Tikua are based on [Viem](https://viem.sh/) library for encode and decode ABI calls.
 
+In case you don't want to use Deroll. You can easily decode Tikua inputs using View with the following syntax:
+
+### Using payload decoding on Advance
+
+```ts
+import { decodeFunctionData, parseAbi } from "viem";
+
+// define application ABI
+const abi = parseAbi(["function attackDragon(uint256 dragonId)"]);
+
+const handleAdvance: AdvanceRequestHandler = async (data) => {
+  // functionName will be the name of the function called on Tikua.
+  // args are the arguments passed using Tikua
+  const { functionName, args } = decodeFunctionData({
+    abi,
+    data: data.payload,
+  });
+  // Execute calls you want based on functionName and args passed.
+  return "accept";
+};
+```
+
+### Using payload decoding on Inspect
+
+```ts
+import { decodeFunctionData, parseAbi, hexToString } from "viem";
+
+// define application ABI
+const abi = parseAbi(["function heroLife(address)"]);
+
+const handleInspect: InspectRequestHandler = async (data) => {
+  // functionName will be the name of the function called on Tikua.
+  // args are the arguments passed using Tikua
+  const { functionName, args } = decodeFunctionData({
+    abi,
+    data: hexToString(data.payload) as `0x${string}`,
+  });
+  // Execute calls you want based on functionName and args passed.
+};
+```
+
 ## References
 
 [Human Readable ABI definition](https://abitype.dev/api/human)
