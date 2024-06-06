@@ -4,6 +4,7 @@ This is a [Cartesi CLI](https://docs.cartesi.io/cartesi-rollups/1.3/quickstart/)
 
 ## Usage
 
+[!IMPORTANT]
 This example **require** that you first run the **tikua-back-portals** example on backend and also deploy contracts contained on README.md.
 
 After you have finished run the Cartesi Machine and deployed contracts locally you can call the script above to send an Input. The backend will generate a Voucher containing a payload to returns funds back to you.

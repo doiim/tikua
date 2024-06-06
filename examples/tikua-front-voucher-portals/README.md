@@ -4,10 +4,10 @@ This example project demonstrates how to use the Tikua client in a JavaScript fr
 
 Overall, this example project should help you get started with using the Cartesi SDK client in a JavaScript frontend application.
 
-## Usage
+## Installation
 
 [!IMPORTANT]
-This example **require** that you first run the **tikua-back** example on backend and also deploy contracts contained on README.md.
+This example **require** that you first run the **tikua-back-portals** example on backend and also deploy contracts contained on README.md.
 
 Be sure that the backend example is running before run this client.
 
@@ -15,6 +15,10 @@ Be sure that the backend example is running before run this client.
 npm install
 npm run dev
 ```
+
+## Usage
+
+This example contains multiple operations using Cartesi Portals. After connect your wallet on the app you can proceed approving token transfers and executing Vouchers afterwards. The backend will generate a Voucher containing a payload to returns funds back to you.
 
 ## References
 

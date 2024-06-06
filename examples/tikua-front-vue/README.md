@@ -6,6 +6,9 @@ Overall, this example project should help you get started with using the Cartesi
 
 ## Usage
 
+[!IMPORTANT]
+This example **require** that you first run the **tikua-back** example on backend and also deploy contracts contained on README.md.
+
 Be sure that the backend example is running before run this client.
 
 ```sh
