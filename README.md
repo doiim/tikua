@@ -6,7 +6,7 @@
 
 # Tikua
 
-A Isomorphic JS Cartesi package to use with any visual library on Browser or Terminal. The SDK will support any provider or network. All configurable and allowing defining an app with multiple chains supported. The SDK should adapt accordingly to the configurations and raise warnings in cases of non-supported provider chains.
+Isomorphic JS package designed for seamless integration with any visual library on both Browser and Terminal environments. The SDK supports any provider or network, offering complete configurability to define applications with multiple chain support. It adapts to specific configurations and provides warnings for any unsupported provider chains.
 
 ## Installation
 
@@ -16,7 +16,7 @@ npm install -s @doiim/tikua
 
 ## Usage
 
-You can jump directly to our [Examples](https://github.com/doiim/tikua/tree/master/examples) folder and check how to implement Tikua on multiple platforms or check here the description of Tikua Class and its functions.
+You can jump directly to our [Examples](https://github.com/doiim/tikua/tree/master/examples) folder to see how to implement Tikua on multiple platforms. Additionally, you can find a detailed description of the Tikua Class and its functions.
 
 ### Tikua SDK
 
@@ -142,7 +142,7 @@ Returns a promise that resolves to an array of vouchers fetched from the specifi
 
 #### `executeVoucher`
 
-Executes a voucher on the Cartesi DApp, simulating the transaction and then writing it to the blockchain if successful. This function is crucial for processing vouchers, which are essentially tasks or commands that have been issued to the DApp.
+Executes a voucher on the Cartesi DApp by simulating the transaction and writing it to the blockchain upon success. This function is essential for processing vouchers, which are tasks or commands issued to the DApp.
 
 - `voucher: VoucherDecoded`: The voucher object to be executed. It must include the destination address, the payload data, and the proof of validity.
 
@@ -167,7 +167,7 @@ sequenceDiagram
 
 #### `depositEther`
 
-Deposits Ether on the Ether Portal, simulating the deposit transaction and returning the transaction hash.
+Deposits Ether on the Ether Portal by simulating the deposit transaction and returning the transaction hash.
 
 - `amount: bigint`: The amount of Ether to deposit.
 - `execLayerData: string`: The execution layer data for the deposit.
