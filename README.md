@@ -343,7 +343,6 @@ Returns a promise that resolves to a receipt with decodedLogs and decodedInput o
 const txHash = await tikua.sendInput("attackDragon", [1, "sword"]);
 
 const receipt = await tikua.getTransactionReceiptByHash(txHash);
-console.log("Succedded:", receipt.status ? "success" : "failed");
 console.log(receipt.decodedInput);
 console.log(receipt.decodedLogs);
 ```
