@@ -1,5 +1,5 @@
 import { gql } from "@urql/core";
-import { Address, ParseAbi, parseAbi, encodeAbiParameters, parseAbiParameters } from 'viem';
+import { Address, parseAbi, encodeAbiParameters, FormattedTransactionReceipt } from 'viem';
 
 encodeAbiParameters
 
@@ -299,3 +299,18 @@ export const ApproveERC721ABI = parseAbi([
 export const ApproveERC1155ABI = parseAbi([
   "function setApprovalForAll(address operator, bool approved)",
 ])
+
+export interface DecodedTransactionReceipt extends FormattedTransactionReceipt {
+  decodedLogs: DecodedLog[],
+  decodedInput: DecodedInput | undefined,
+}
+
+export interface DecodedLog {
+  eventName: string;
+  args: any[] | any | undefined;
+}
+
+export interface DecodedInput {
+  args: readonly unknown[] | any | undefined;
+  functionName: string;
+}

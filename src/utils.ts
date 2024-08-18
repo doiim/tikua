@@ -22,6 +22,16 @@ import {
     namesByChain
 } from './types.js';
 
+export const getContractNameFromAddress = async (chainId: number | Address, address: Address) => {
+    const decoded = (typeof chainId === 'number' ? '0x' + chainId.toString(16) : chainId) as ChainName;
+    // We replace network foundry with Mainnet cause it is the same addresses
+    // @ts-ignore
+    const deploymentAddresses = (await import(`../deployments/${decoded == '0x7a69' ? 'mainnet' : namesByChain[decoded as ChainName]}.json`, { assert: { type: "json" } })).default as { [key: string]: string };
+    const index = Object.values(deploymentAddresses).indexOf(getAddress(address));
+    if (index > -1) return Object.keys(deploymentAddresses)[index] as ContractName;
+    return null;
+}
+
 /**
  * Retrieves the deployment address for a given contract on a specified chain.
  *

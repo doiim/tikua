@@ -38,7 +38,12 @@ const main = async () => {
     console.log('HERO STATUS:', await tikua.fetchInspect('heroStatus', [account.address]))
     console.log('DRAGONS LIST:', await tikua.fetchInspect('dragonsList', []))
 
-    await tikua.sendInput('attackDragon', [1])
+    const hash = await tikua.sendInput('attackDragon', [1])
+
+    const receipt = await tikua.getTransactionReceiptByHash(hash)
+    console.log("Succedded:", receipt.status);
+    console.log(receipt.decodedInput);
+    console.log(receipt.decodedLogs);
 }
 
 main()
