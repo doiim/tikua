@@ -329,6 +329,25 @@ sequenceDiagram
     ERC1155 Batch Portal->>-Cartesi Machine: Input(payload)
 ```
 
+#### `getTransactionReceiptByHash`
+
+Monitor a transaction hash and return the transaction receipt with decoded logs and inputs. If you want to be able to decode events and function from different contracts, try adding to custom ABI. Basically you will use this function for track and monitor the success/failure of a transaction. Also, it automatically decode function calls for Cartesi contracts and if it not involves Cartesi contract, it tries to decode using your DappAbi.
+
+- `hash: string`: The transaction hash that you want to monitor.
+- `confirmations: number`: (Optional) - The amount of confirmation blocks before returning. Default to 0.
+- `customABI: Abi`: (Optional) - The custom ABI to decode inputs and logs from receipt.
+
+Returns a promise that resolves to a receipt with decodedLogs and decodedInput objects.
+
+```ts
+const txHash = await tikua.sendInput("attackDragon", [1, "sword"]);
+
+const receipt = await tikua.getTransactionReceiptByHash(txHash);
+console.log("Succedded:", receipt.status ? "success" : "failed");
+console.log(receipt.decodedInput);
+console.log(receipt.decodedLogs);
+```
+
 ### Utility Static Functions
 
 #### `getCartesiDeploymentAddress`

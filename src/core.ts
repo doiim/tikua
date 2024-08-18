@@ -11,7 +11,9 @@ import {
     extractChain,
     Chain,
     PublicClient,
-    WalletClient
+    WalletClient,
+    decodeEventLog,
+    decodeFunctionData
 } from 'viem'
 import {
     mainnet,
@@ -31,11 +33,14 @@ import {
     cacheExchange,
     fetchExchange,
 } from "@urql/core"
-import { decodeNotices, decodeVouchers, getCartesiContractAbi, getCartesiDeploymentAddress } from './utils.js';
+import { decodeNotices, decodeVouchers, getCartesiContractAbi, getCartesiDeploymentAddress, getContractNameFromAddress } from './utils.js';
 import {
     ApproveERC1155ABI,
     ApproveERC20ABI,
     ApproveERC721ABI,
+    DecodedInput,
+    DecodedLog,
+    DecodedTransactionReceipt,
     GET_NOTICES_QUERY,
     GET_NOTICE_FROM_INPUT_QUERY,
     GET_VOUCHERS_QUERY,
@@ -731,5 +736,62 @@ export class Tikua {
         return txHash;
     }
 
+    /**
+     * Monitor a transaction hash and return the transaction receipt with decoded logs and inputs.
+     * @dev If you want to be able to decode events and function from different contracts, try adding to custom ABI.
+     * @param hash - The transaction hash that you want to monitor.
+     * @param confirmations - (Optional) The amount of confirmation blocks before returning. Default to 0.
+     * @param customABI - (Optional) The custom ABI to decode inputs and logs from receipt.
+     * @returns {Promise<DecodedTransactionReceipt>} - A promise that resolves to the transaction receipt of the given transaction hash.
+     * @throws {Error} - If the transaction hash isn't found.
+     */
+    public getTransactionReceiptByHash = async (
+        hash: `0x${string}`,
+        confirmations: number = 0,
+        customABI?: Abi
+    ) => {
+
+        const { publicClient, chain } = await this.prepareSender();
+        // Get transaction receipt for completion data
+        const receipt = await publicClient.waitForTransactionReceipt({
+            hash,
+            confirmations
+        })
+        // Get transaction for decode input
+        const transaction = await publicClient.getTransaction({
+            hash
+        })
+        if (!receipt) throw new Error(`Transaction receipt not found for hash ${hash}`);
+        if (receipt.to) {
+            const contractName = await getContractNameFromAddress(chain.id, receipt.to)
+            let contractAbi: Abi = this.dappABI;
+            if (contractName) contractAbi = await getCartesiContractAbi(contractName)
+            const decodedLogs = receipt.logs.map(log => {
+                try {
+                    const evt = decodeEventLog({
+                        abi: customABI || contractAbi,
+                        data: log.data,
+                        topics: log.topics
+                    }) as DecodedLog
+                    return evt;
+                } catch (e) {
+                    return undefined;
+                }
+            })
+            let decodedInput: DecodedInput | undefined = undefined;
+            try {
+                decodedInput = decodeFunctionData({
+                    abi: customABI || contractAbi,
+                    data: transaction.input
+                })
+            } catch { }
+            return {
+                ...receipt,
+                decodedLogs,
+                decodedInput
+            } as DecodedTransactionReceipt
+        }
+        return receipt as DecodedTransactionReceipt
+    }
 }
 
